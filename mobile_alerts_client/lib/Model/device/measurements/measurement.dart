@@ -1,3 +1,6 @@
+import 'package:isar/isar.dart';
+import 'package:mobile_alerts_client/Model/device/device_types.dart';
+
 import 'measurementid02.dart';
 
 abstract class Measurement {
@@ -5,7 +8,7 @@ abstract class Measurement {
   DateTime measureTime;
   DateTime serverReceiveTime;
   bool lowBattery;
-
+  abstract Id id;
   Measurement(
       {required this.measurementId,
       required this.measureTime,
@@ -21,9 +24,15 @@ abstract class Measurement {
   @override
   int get hashCode => measurementId.hashCode;
 
-  factory Measurement.fromMap(Map<String, dynamic> data) {
+  factory Measurement.fromMap(Map<String, dynamic> data,
+      {required DeviceType type}) {
+    switch (type) {
+      case DeviceType.id02:
+        return MeasurementID02.fromMap(data);
+      default:
+        throw UnimplementedError();
+    }
     //TODO support other Sensors see https://mobile-alerts.eu/info/public_server_api_documentation.pdf
     //check from highest-specific to the least specific
-    return MeasurementID02.fromMap(data);
   }
 }

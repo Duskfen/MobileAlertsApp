@@ -1,9 +1,16 @@
 import 'dart:convert';
 
+import 'package:isar/isar.dart';
+
 import 'measurement.dart';
 
+part 'measurementid02.g.dart';
+
 /// MeasurementData from an ID02 Sensor
+@Collection()
 class MeasurementID02 extends Measurement {
+  @override
+  Id id = Isar.autoIncrement;
   double temperature;
 
   MeasurementID02({
@@ -30,4 +37,14 @@ class MeasurementID02 extends Measurement {
   factory MeasurementID02.fromJson(String data) {
     return MeasurementID02.fromMap(json.decode(data) as Map<String, dynamic>);
   }
+
+  @override
+  bool operator ==(Object other) {
+    return other is MeasurementID02 &&
+        other.runtimeType == runtimeType &&
+        other.measurementId == measurementId;
+  }
+
+  @override
+  int get hashCode => measurementId.hashCode;
 }

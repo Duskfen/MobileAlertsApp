@@ -1,9 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:isar/isar.dart';
+import 'package:mobile_alerts_client/Backgroundservice/callback_dispatcher.dart';
+import 'package:mobile_alerts_client/Backgroundservice/poll_devices.dart';
+import 'package:mobile_alerts_client/Domain/device_repository.dart';
 import 'package:mobile_alerts_client/Views/homepage.dart';
+import 'package:workmanager/workmanager.dart';
 
-//TODO https://isar.dev/tutorials/quickstart.html
+import 'Model/device/device.dart';
+import 'Model/device/measurements/measurementid02.dart';
 
-void main() {
+void main() async {
+  if (DeviceRepository.getAllDevices().isEmpty) {
+    Device d = await Device.createDevice("020C28392184");
+    DeviceRepository.saveDevice(d);
+  }
+
+  WidgetsFlutterBinding.ensureInitialized();
+  Workmanager().initialize(
+    CallbackDispatcher.callbackDispatcher,
+    isInDebugMode: true,
+  );
+  Workmanager().registerPeriodicTask(
+    CallbackDispatcher.periodicPollDevices,
+    CallbackDispatcher.periodicPollDevices,
+    frequency: const Duration(minutes: 15),
+    constraints: Constraints(networkType: NetworkType.not_roaming),
+  );
+
+  // await PollDevices.pollAllAvailableDevices();
   runApp(const MainApp());
 }
 
