@@ -28,28 +28,33 @@ const DeviceSchema = CollectionSchema(
       name: r'deviceid',
       type: IsarType.string,
     ),
-    r'hasListeners': PropertySchema(
+    r'getName': PropertySchema(
       id: 2,
+      name: r'getName',
+      type: IsarType.string,
+    ),
+    r'hasListeners': PropertySchema(
+      id: 3,
       name: r'hasListeners',
       type: IsarType.bool,
     ),
     r'hashCode': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'hashCode',
       type: IsarType.long,
     ),
     r'lastseen': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'lastseen',
       type: IsarType.long,
     ),
     r'lowbattery': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'lowbattery',
       type: IsarType.bool,
     ),
     r'name': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'name',
       type: IsarType.string,
     )
@@ -64,7 +69,7 @@ const DeviceSchema = CollectionSchema(
     r'measurements': LinkSchema(
       id: -3881096300237170209,
       name: r'measurements',
-      target: r'MeasurementID02',
+      target: r'Measurement',
       single: false,
     )
   },
@@ -82,7 +87,18 @@ int _deviceEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.deviceid.length * 3;
-  bytesCount += 3 + object.name.length * 3;
+  {
+    final value = object.getName;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.name;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -94,11 +110,12 @@ void _deviceSerialize(
 ) {
   writer.writeByte(offsets[0], object.deviceType.index);
   writer.writeString(offsets[1], object.deviceid);
-  writer.writeBool(offsets[2], object.hasListeners);
-  writer.writeLong(offsets[3], object.hashCode);
-  writer.writeLong(offsets[4], object.lastseen);
-  writer.writeBool(offsets[5], object.lowbattery);
-  writer.writeString(offsets[6], object.name);
+  writer.writeString(offsets[2], object.getName);
+  writer.writeBool(offsets[3], object.hasListeners);
+  writer.writeLong(offsets[4], object.hashCode);
+  writer.writeLong(offsets[5], object.lastseen);
+  writer.writeBool(offsets[6], object.lowbattery);
+  writer.writeString(offsets[7], object.name);
 }
 
 Device _deviceDeserialize(
@@ -109,14 +126,14 @@ Device _deviceDeserialize(
 ) {
   final object = Device(
     deviceid: reader.readString(offsets[1]),
+    name: reader.readStringOrNull(offsets[7]),
   );
   object.deviceType =
       _DevicedeviceTypeValueEnumMap[reader.readByteOrNull(offsets[0])] ??
           DeviceType.id01;
   object.id = id;
-  object.lastseen = reader.readLongOrNull(offsets[4]);
-  object.lowbattery = reader.readBoolOrNull(offsets[5]);
-  object.name = reader.readString(offsets[6]);
+  object.lastseen = reader.readLongOrNull(offsets[5]);
+  object.lowbattery = reader.readBoolOrNull(offsets[6]);
   return object;
 }
 
@@ -133,15 +150,17 @@ P _deviceDeserializeProp<P>(
     case 1:
       return (reader.readString(offset)) as P;
     case 2:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 4:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 5:
-      return (reader.readBoolOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 6:
-      return (reader.readString(offset)) as P;
+      return (reader.readBoolOrNull(offset)) as P;
+    case 7:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -203,7 +222,7 @@ List<IsarLinkBase<dynamic>> _deviceGetLinks(Device object) {
 void _deviceAttach(IsarCollection<dynamic> col, Id id, Device object) {
   object.id = id;
   object.measurements
-      .attach(col, col.isar.collection<MeasurementID02>(), r'measurements', id);
+      .attach(col, col.isar.collection<Measurement>(), r'measurements', id);
 }
 
 extension DeviceQueryWhereSort on QueryBuilder<Device, Device, QWhere> {
@@ -465,6 +484,152 @@ extension DeviceQueryFilter on QueryBuilder<Device, Device, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Device, Device, QAfterFilterCondition> getNameIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'getName',
+      ));
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterFilterCondition> getNameIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'getName',
+      ));
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterFilterCondition> getNameEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'getName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterFilterCondition> getNameGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'getName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterFilterCondition> getNameLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'getName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterFilterCondition> getNameBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'getName',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterFilterCondition> getNameStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'getName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterFilterCondition> getNameEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'getName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterFilterCondition> getNameContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'getName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterFilterCondition> getNameMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'getName',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterFilterCondition> getNameIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'getName',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterFilterCondition> getNameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'getName',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<Device, Device, QAfterFilterCondition> hasListenersEqualTo(
       bool value) {
     return QueryBuilder.apply(this, (query) {
@@ -675,8 +840,24 @@ extension DeviceQueryFilter on QueryBuilder<Device, Device, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Device, Device, QAfterFilterCondition> nameIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'name',
+      ));
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterFilterCondition> nameIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'name',
+      ));
+    });
+  }
+
   QueryBuilder<Device, Device, QAfterFilterCondition> nameEqualTo(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -689,7 +870,7 @@ extension DeviceQueryFilter on QueryBuilder<Device, Device, QFilterCondition> {
   }
 
   QueryBuilder<Device, Device, QAfterFilterCondition> nameGreaterThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -704,7 +885,7 @@ extension DeviceQueryFilter on QueryBuilder<Device, Device, QFilterCondition> {
   }
 
   QueryBuilder<Device, Device, QAfterFilterCondition> nameLessThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -719,8 +900,8 @@ extension DeviceQueryFilter on QueryBuilder<Device, Device, QFilterCondition> {
   }
 
   QueryBuilder<Device, Device, QAfterFilterCondition> nameBetween(
-    String lower,
-    String upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -809,7 +990,7 @@ extension DeviceQueryObject on QueryBuilder<Device, Device, QFilterCondition> {}
 
 extension DeviceQueryLinks on QueryBuilder<Device, Device, QFilterCondition> {
   QueryBuilder<Device, Device, QAfterFilterCondition> measurements(
-      FilterQuery<MeasurementID02> q) {
+      FilterQuery<Measurement> q) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'measurements');
     });
@@ -889,6 +1070,18 @@ extension DeviceQuerySortBy on QueryBuilder<Device, Device, QSortBy> {
   QueryBuilder<Device, Device, QAfterSortBy> sortByDeviceidDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deviceid', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterSortBy> sortByGetName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'getName', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterSortBy> sortByGetNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'getName', Sort.desc);
     });
   }
 
@@ -975,6 +1168,18 @@ extension DeviceQuerySortThenBy on QueryBuilder<Device, Device, QSortThenBy> {
   QueryBuilder<Device, Device, QAfterSortBy> thenByDeviceidDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deviceid', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterSortBy> thenByGetName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'getName', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterSortBy> thenByGetNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'getName', Sort.desc);
     });
   }
 
@@ -1065,6 +1270,13 @@ extension DeviceQueryWhereDistinct on QueryBuilder<Device, Device, QDistinct> {
     });
   }
 
+  QueryBuilder<Device, Device, QDistinct> distinctByGetName(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'getName', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<Device, Device, QDistinct> distinctByHasListeners() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'hasListeners');
@@ -1116,6 +1328,12 @@ extension DeviceQueryProperty on QueryBuilder<Device, Device, QQueryProperty> {
     });
   }
 
+  QueryBuilder<Device, String?, QQueryOperations> getNameProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'getName');
+    });
+  }
+
   QueryBuilder<Device, bool, QQueryOperations> hasListenersProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'hasListeners');
@@ -1140,7 +1358,7 @@ extension DeviceQueryProperty on QueryBuilder<Device, Device, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Device, String, QQueryOperations> nameProperty() {
+  QueryBuilder<Device, String?, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
     });

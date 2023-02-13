@@ -1,30 +1,35 @@
 import 'package:isar/isar.dart';
+import 'package:mobile_alerts_client/Model/device/measurements/measurement.dart';
 import 'package:mobile_alerts_client/Model/device/measurements/measurementid02.dart';
 
 import '../Model/device/device.dart';
 
 class DeviceRepository {
   static final isar =
-      Isar.openSync([DeviceSchema, MeasurementID02Schema], inspector: true);
+      Isar.openSync([DeviceSchema, MeasurementSchema], inspector: true);
 
-  static List<Device> getAllDevices() {
+  static List<Device> getAll() {
     return (isar.devices.where().findAllSync())
       ..forEach((element) {
         element.measurements.loadSync();
       });
   }
 
-  static Device saveDevice(Device device) {
+  static Device save(Device device) {
     isar.writeTxnSync(() {
       isar.devices.putSync(device);
     });
-    updateDeviceMeasurements(device);
+    updateMeasurements(device);
 
     return device;
     //updateDeviceMeasurements(device);
   }
 
-  static void updateDeviceMeasurements(Device device) {
+  static void update(Device device) {
+    save(device);
+  }
+
+  static void updateMeasurements(Device device) {
     isar.writeTxnSync(() {
       device.measurements
           .saveSync(); //Somehow thy async version does not work properly!
@@ -32,7 +37,7 @@ class DeviceRepository {
     });
   }
 
-  static void deleteDevice(Device device) {
+  static void remove(Device device) {
     return isar.writeTxnSync(() {
       isar.devices.deleteSync(device.id);
     });

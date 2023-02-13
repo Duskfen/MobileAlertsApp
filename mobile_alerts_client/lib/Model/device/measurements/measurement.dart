@@ -1,19 +1,30 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:mobile_alerts_client/Model/device/device_types.dart';
 
 import 'measurementid02.dart';
 
-abstract class Measurement {
+part 'measurement.g.dart';
+
+@Collection()
+class Measurement {
   int measurementId;
   DateTime measureTime;
   DateTime serverReceiveTime;
+  DateTime fetchTime;
   bool lowBattery;
-  abstract Id id;
+  Id id = Isar.autoIncrement;
+  String
+      rawData; //Required because IsarLink does not support Generics or abstract types in links
   Measurement(
       {required this.measurementId,
       required this.measureTime,
       required this.serverReceiveTime,
-      required this.lowBattery});
+      required this.lowBattery,
+      required this.rawData,
+      required this.fetchTime});
 
   @override
   bool operator ==(Object other) {
@@ -24,15 +35,21 @@ abstract class Measurement {
   @override
   int get hashCode => measurementId.hashCode;
 
-  factory Measurement.fromMap(Map<String, dynamic> data,
-      {required DeviceType type}) {
-    switch (type) {
-      case DeviceType.id02:
-        return MeasurementID02.fromMap(data);
-      default:
-        throw UnimplementedError();
-    }
-    //TODO support other Sensors see https://mobile-alerts.eu/info/public_server_api_documentation.pdf
-    //check from highest-specific to the least specific
+  String getDataPoint(String key) {
+    return jsonDecode(rawData)[key].toString();
   }
+
+  factory Measurement.fromMap(Map<String, dynamic> data) => Measurement(
+        measurementId: data['idx'] as int,
+        measureTime:
+            DateTime.fromMillisecondsSinceEpoch((data['ts'] as int) * 1000),
+        serverReceiveTime:
+            DateTime.fromMillisecondsSinceEpoch((data['c'] as int) * 1000),
+        lowBattery: data['lb'] as bool,
+        rawData: jsonEncode(data),
+        fetchTime: DateTime.now(),
+        // temperature: (data['t1'] as num).toDouble(),
+      );
+  //TODO support other Sensors see https://mobile-alerts.eu/info/public_server_api_documentation.pdf
+  //check from highest-specific to the least specific
 }

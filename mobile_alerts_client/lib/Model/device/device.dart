@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:mobile_alerts_client/Domain/device_repository.dart';
 import 'package:mobile_alerts_client/Model/device/device_types.dart';
-import 'package:mobile_alerts_client/Model/device/measurements/measurementid02.dart';
 
 import 'measurements/measurement.dart';
 import 'package:http/http.dart' as http;
@@ -19,7 +18,15 @@ class Device extends ChangeNotifier {
 
   String deviceid;
 
-  String name = "";
+  String? name;
+  String? get getName => name;
+  // ignore: invalid_annotation_target
+  @ignore //is needed.. or the builder tries to use it as a field
+  set setName(String? name) {
+    this.name = name;
+    DeviceRepository.update(this);
+    notifyListeners();
+  }
 
   int? lastseen;
 
@@ -28,9 +35,9 @@ class Device extends ChangeNotifier {
   @enumerated
   late DeviceType deviceType;
 
-  final IsarLinks<MeasurementID02> measurements = IsarLinks();
+  final IsarLinks<Measurement> measurements = IsarLinks();
 
-  Device({required this.deviceid}) {
+  Device({required this.deviceid, this.name}) {
     deviceType = DeviceType.fromId(deviceid);
   }
 
@@ -41,7 +48,7 @@ class Device extends ChangeNotifier {
   //   deviceType = DeviceType.fromId(deviceid);
   // }
 
-  static Future<Device> createDevice(String deviceid) async {
+  static Future<Device> createFetchDevice(String deviceid) async {
     return Device.fromJson(jsonDecode(await _fetchDevice(deviceid)));
   }
 
@@ -72,8 +79,9 @@ class Device extends ChangeNotifier {
       ..lowbattery = json['lowbattery']
       ..deviceType = DeviceType.fromId(json["deviceid"]);
 
-    var m = (Measurement.fromMap(json['measurement'],
-        type: DeviceType.fromId(json["deviceid"])) as MeasurementID02);
+    var m = (Measurement.fromMap(
+      json['measurement'],
+    ));
 
     d.measurements.add(m);
 
@@ -84,12 +92,13 @@ class Device extends ChangeNotifier {
     var json = jsonDecode(await Device._fetchDevice(deviceid));
     json = (json['devices'] as List<dynamic>).first as Map<String, dynamic>;
 
-    var measurement =
-        (Measurement.fromMap(json['measurement'], type: deviceType)
-            as MeasurementID02);
+    var measurement = (Measurement.fromMap(json['measurement']));
 
     measurements.add(measurement);
-    DeviceRepository.updateDeviceMeasurements(this);
+    lastseen = json['lastseen'];
+    lowbattery = json['lowbattery'];
+    DeviceRepository.update(this);
+    DeviceRepository.updateMeasurements(this);
     notifyListeners();
   }
 

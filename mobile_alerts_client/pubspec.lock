@@ -275,6 +275,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
+  intl:
+    dependency: "direct main"
+    description:
+      name: intl
+      sha256: a3715e3bc90294e971cb7dc063fbf3cd9ee0ebf8604ffeafabd9e6f16abbdbe6
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.18.0"
   io:
     dependency: transitive
     description:
@@ -371,6 +379,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
+  nested:
+    dependency: transitive
+    description:
+      name: nested
+      sha256: "03bac4c528c64c95c722ec99280375a6f2fc708eec17c7b3f07253b626cd2a20"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   package_config:
     dependency: transitive
     description:
@@ -395,6 +411,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.1"
+  prompt_dialog:
+    dependency: "direct main"
+    description:
+      name: prompt_dialog
+      sha256: "2d861b4df220b30b921f2aa27a9af18489b8408dbbd2b6131b758618cbee902f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.10"
+  provider:
+    dependency: "direct main"
+    description:
+      name: provider
+      sha256: cdbe7530b12ecd9eb455bdaa2fcb8d4dad22e80b8afb4798b41479d5ce26847f
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.5"
   pub_semver:
     dependency: transitive
     description:
@@ -544,14 +576,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
-  workmanager:
+  worker_manager:
     dependency: "direct main"
     description:
-      name: workmanager
-      sha256: e0be7e35d644643f164ee45d2ce14414f0e0fdde19456aa66065f35a0b1d2ea1
+      name: worker_manager
+      sha256: "39a7f37dfc187145adc46ab94d08e7ca1c9468a2f4600a744b22842c83761cc5"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.1"
+    version: "5.0.0"
   xxh3:
     dependency: transitive
     description:
