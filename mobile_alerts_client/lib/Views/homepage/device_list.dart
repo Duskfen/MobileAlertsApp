@@ -22,8 +22,8 @@ class DeviceList extends StatelessWidget {
         body: ListView(
           children: [
             for (final device in registeredDevices.devices)
-              ChangeNotifierProvider(
-                  create: (context) => device, child: const DeviceCard())
+              ChangeNotifierProvider.value(
+                  value: device, child: const DeviceCard()),
           ],
         ),
       );
