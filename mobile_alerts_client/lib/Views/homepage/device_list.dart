@@ -24,6 +24,9 @@ class DeviceList extends StatelessWidget {
             for (final device in registeredDevices.devices)
               ChangeNotifierProvider.value(
                   value: device, child: const DeviceCard()),
+            const SizedBox(
+              height: 70,
+            ),
           ],
         ),
       );

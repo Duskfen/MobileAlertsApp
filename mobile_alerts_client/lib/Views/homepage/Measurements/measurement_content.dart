@@ -48,12 +48,21 @@ class ValueRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(device.deviceType.keyIcons[i].icon),
-        Text(measurement.getDataPoint(device.deviceType.keyIcons[i].key) +
-            device.deviceType.keyIcons[i].unit),
-      ],
+    var theme = Theme.of(context);
+
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: 70),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Icon(
+            device.deviceType.keyIcons[i].icon,
+            color: theme.colorScheme.secondary,
+          ),
+          Text(measurement.getDataPoint(device.deviceType.keyIcons[i].key) +
+              device.deviceType.keyIcons[i].unit),
+        ],
+      ),
     );
   }
 }

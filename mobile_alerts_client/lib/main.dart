@@ -51,7 +51,7 @@ class _MainAppState extends State<MainApp> {
           home: Scaffold(
             appBar: myAppBar(context, themeMode),
             body: const Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
               child: Center(child: Homepage()),
             ),
           ),
