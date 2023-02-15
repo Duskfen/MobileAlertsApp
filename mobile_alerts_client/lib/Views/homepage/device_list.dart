@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_alerts_client/Model/device/device_types.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -26,6 +27,16 @@ class DeviceList extends StatelessWidget {
             registeredDevices.reorder(oldIndex, newIndex);
           },
           children: [
+            if (registeredDevices.devices.isEmpty)
+              const Card(
+                key: Key("No_Device_Information_Banner"),
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: Text("Start by adding your first sensor!"),
+                  ),
+                ),
+              ),
             for (int i = 0; i < registeredDevices.devices.length; i++)
               ChangeNotifierProvider.value(
                   key: Key("device_$i"),
@@ -34,7 +45,7 @@ class DeviceList extends StatelessWidget {
                       index: i, child: const DeviceCard())),
             const SizedBox(
               key: Key("devices_padbox"),
-              height: 70,
+              height: 85,
             ),
           ],
         ),
@@ -54,18 +65,23 @@ class ElevatedSensorAddButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      onPressed: () async => await handlePropmpt(context),
+      onPressed: () async => await handlePrompt(context),
       child: const Icon(Icons.add),
     );
   }
 
-  handlePropmpt(BuildContext context) async {
+  handlePrompt(BuildContext context) async {
     String? newsensor = await prompt(
       context,
       title: const Text("Your Sensor-ID"),
       validator: (String? value) {
         if (value == null || value.isEmpty) {
           return 'Please enter a valid ID';
+        }
+        try {
+          DeviceType.fromId(value);
+        } catch (e) {
+          return 'This Sensortype is not supported';
         }
         return null;
       },

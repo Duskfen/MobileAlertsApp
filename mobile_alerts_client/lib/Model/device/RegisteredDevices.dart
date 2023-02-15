@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:mobile_alerts_client/Domain/device_repository.dart';
+import 'package:mobile_alerts_client/Model/device/measurements/measurement.dart';
 import 'device.dart';
 
 class RegisteredDevices extends ChangeNotifier {
@@ -11,13 +12,14 @@ class RegisteredDevices extends ChangeNotifier {
 
   /// lastpoll is intendet just to give a vague idea when the last poll was
   DateTime? get lastpoll {
-    var last = devices.map((e) => e.lastseen).reduce((value, maxi) {
-      if (value == null) return maxi;
-      if (maxi == null) return value;
-      return max<int>(value, maxi);
+    Iterable<DateTime> test = devices
+        .expand((element) => element.measurements)
+        .map((e) => e.fetchTime);
+    if (test.isEmpty) return null;
+    return test.reduce((value, maxi) {
+      if (value.isAfter(maxi)) return value;
+      return maxi;
     });
-    if (last == null) return null;
-    return DateTime.fromMillisecondsSinceEpoch(last * 1000);
   }
 
   RegisteredDevices() {

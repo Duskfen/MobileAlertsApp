@@ -1,3 +1,4 @@
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 //import 'package:mobile_alerts_client/Backgroundservice/callback_dispatcher.dart' as callback_dispatcher;
 import 'package:mobile_alerts_client/Views/homepage/homepage.dart';
@@ -38,26 +39,32 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<ThemeMode>(
-      valueListenable: MainApp.themeNotifier,
-      builder: (context, themeMode, child) {
-        return MaterialApp(
-          theme: ThemeData.from(
-              colorScheme: ColorScheme.fromSeed(
-                  seedColor: const Color.fromARGB(255, 52, 152, 219)),
-              useMaterial3: true), //ThemeData.dark(useMaterial3: true),
-          darkTheme: ThemeData.dark(useMaterial3: true),
-          themeMode: themeMode,
-          home: Scaffold(
-            appBar: myAppBar(context, themeMode),
-            body: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
-              child: Center(child: Homepage()),
+    return DynamicColorBuilder(
+        builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+      return ValueListenableBuilder<ThemeMode>(
+        valueListenable: MainApp.themeNotifier,
+        builder: (context, themeMode, child) {
+          return MaterialApp(
+            theme: ThemeData.from(
+                colorScheme: lightDynamic ??
+                    ColorScheme.fromSeed(
+                        seedColor: const Color.fromARGB(255, 52, 152, 219)),
+                useMaterial3: true), //ThemeData.dark(useMaterial3: true),
+            darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
+                colorScheme: darkDynamic ??
+                    ThemeData.dark(useMaterial3: true).colorScheme),
+            themeMode: themeMode,
+            home: Scaffold(
+              appBar: myAppBar(context, themeMode),
+              body: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: Center(child: Homepage()),
+              ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+    });
   }
 
   AppBar myAppBar(BuildContext context, ThemeMode themeMode) {

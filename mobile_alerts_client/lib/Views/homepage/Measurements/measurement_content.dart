@@ -3,7 +3,6 @@ import 'package:mobile_alerts_client/Model/device/device.dart';
 import 'package:mobile_alerts_client/Model/device/device_types.dart';
 
 import '../../../Model/device/measurements/measurement.dart';
-import 'measurememntid02_content.dart';
 
 class MeasurementContent extends StatelessWidget {
   const MeasurementContent({super.key, required this.device});
@@ -52,24 +51,32 @@ class ValueRow extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
 
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minWidth: 75),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Icon(
-            device.deviceType.measurementProperties[i].icon,
-            color: theme.colorScheme.primary,
-          ),
-          SizedBox(
-            width: 5,
-          ),
-          Text(device.deviceType.measurementProperties[i].formatter(
-              measurement.getDataPoint(
-                      device.deviceType.measurementProperties[i].key) +
-                  device.deviceType.measurementProperties[i].unit)),
-        ],
-      ),
-    );
+    return Container(
+        // alignment: Alignment.center,
+        constraints: const BoxConstraints(minWidth: 110),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: theme.colorScheme.secondary,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Icon(
+              device.deviceType.measurementProperties[i].icon,
+              color: theme.colorScheme.onSecondary,
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            Text(
+                device.deviceType.measurementProperties[i].formatter(
+                    measurement.getDataPoint(
+                            device.deviceType.measurementProperties[i].key) +
+                        device.deviceType.measurementProperties[i].unit),
+                style: theme.textTheme.bodyMedium
+                    ?.copyWith(color: theme.colorScheme.onSecondary)),
+          ],
+        ));
   }
 }
