@@ -57,6 +57,11 @@ const DeviceSchema = CollectionSchema(
       id: 7,
       name: r'name',
       type: IsarType.string,
+    ),
+    r'order': PropertySchema(
+      id: 8,
+      name: r'order',
+      type: IsarType.long,
     )
   },
   estimateSize: _deviceEstimateSize,
@@ -116,6 +121,7 @@ void _deviceSerialize(
   writer.writeLong(offsets[5], object.lastseen);
   writer.writeBool(offsets[6], object.lowbattery);
   writer.writeString(offsets[7], object.name);
+  writer.writeLong(offsets[8], object.order);
 }
 
 Device _deviceDeserialize(
@@ -127,6 +133,7 @@ Device _deviceDeserialize(
   final object = Device(
     deviceid: reader.readString(offsets[1]),
     name: reader.readStringOrNull(offsets[7]),
+    order: reader.readLong(offsets[8]),
   );
   object.deviceType =
       _DevicedeviceTypeValueEnumMap[reader.readByteOrNull(offsets[0])] ??
@@ -161,6 +168,8 @@ P _deviceDeserializeProp<P>(
       return (reader.readBoolOrNull(offset)) as P;
     case 7:
       return (reader.readStringOrNull(offset)) as P;
+    case 8:
+      return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -984,6 +993,58 @@ extension DeviceQueryFilter on QueryBuilder<Device, Device, QFilterCondition> {
       ));
     });
   }
+
+  QueryBuilder<Device, Device, QAfterFilterCondition> orderEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'order',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterFilterCondition> orderGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'order',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterFilterCondition> orderLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'order',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterFilterCondition> orderBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'order',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
 }
 
 extension DeviceQueryObject on QueryBuilder<Device, Device, QFilterCondition> {}
@@ -1144,6 +1205,18 @@ extension DeviceQuerySortBy on QueryBuilder<Device, Device, QSortBy> {
       return query.addSortBy(r'name', Sort.desc);
     });
   }
+
+  QueryBuilder<Device, Device, QAfterSortBy> sortByOrder() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'order', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterSortBy> sortByOrderDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'order', Sort.desc);
+    });
+  }
 }
 
 extension DeviceQuerySortThenBy on QueryBuilder<Device, Device, QSortThenBy> {
@@ -1254,6 +1327,18 @@ extension DeviceQuerySortThenBy on QueryBuilder<Device, Device, QSortThenBy> {
       return query.addSortBy(r'name', Sort.desc);
     });
   }
+
+  QueryBuilder<Device, Device, QAfterSortBy> thenByOrder() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'order', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Device, Device, QAfterSortBy> thenByOrderDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'order', Sort.desc);
+    });
+  }
 }
 
 extension DeviceQueryWhereDistinct on QueryBuilder<Device, Device, QDistinct> {
@@ -1305,6 +1390,12 @@ extension DeviceQueryWhereDistinct on QueryBuilder<Device, Device, QDistinct> {
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Device, Device, QDistinct> distinctByOrder() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'order');
     });
   }
 }
@@ -1361,6 +1452,12 @@ extension DeviceQueryProperty on QueryBuilder<Device, Device, QQueryProperty> {
   QueryBuilder<Device, String?, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
+    });
+  }
+
+  QueryBuilder<Device, int, QQueryOperations> orderProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'order');
     });
   }
 }

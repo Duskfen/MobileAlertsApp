@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:provider/provider.dart';
@@ -19,12 +20,20 @@ class DeviceList extends StatelessWidget {
       return Scaffold(
         floatingActionButton:
             ElevatedSensorAddButton(devices: registeredDevices),
-        body: ListView(
+        body: ReorderableListView(
+          buildDefaultDragHandles: false,
+          onReorder: (oldIndex, newIndex) {
+            registeredDevices.reorder(oldIndex, newIndex);
+          },
           children: [
-            for (final device in registeredDevices.devices)
+            for (int i = 0; i < registeredDevices.devices.length; i++)
               ChangeNotifierProvider.value(
-                  value: device, child: const DeviceCard()),
+                  key: Key("device_$i"),
+                  value: registeredDevices.devices[i],
+                  child: ReorderableDelayedDragStartListener(
+                      index: i, child: const DeviceCard())),
             const SizedBox(
+              key: Key("devices_padbox"),
               height: 70,
             ),
           ],

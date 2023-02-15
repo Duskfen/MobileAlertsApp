@@ -122,9 +122,10 @@ class HeadLeft extends StatelessWidget {
             if (result == null) return;
             device.setName = result;
           },
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: Icon(Icons.edit, size: 16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child:
+                Icon(Icons.edit, size: 16, color: theme.colorScheme.secondary),
           ),
         ),
       ],

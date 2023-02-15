@@ -15,7 +15,9 @@ class MeasurementContent extends StatelessWidget {
     Measurement measurement = device.measurements.last;
     return Column(
       children: [
-        for (int i = 0; i < device.deviceType.keyIcons.length; i += 2)
+        for (int i = 0;
+            i < device.deviceType.measurementProperties.length;
+            i += 2)
           Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Row(
@@ -23,7 +25,7 @@ class MeasurementContent extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   for (int j = 0; j < 2; j++) //2 items in each row
-                    i + j < device.deviceType.keyIcons.length
+                    i + j < device.deviceType.measurementProperties.length
                         ? ValueRow(
                             device: device, i: i + j, measurement: measurement)
                         : const SizedBox.shrink()
@@ -51,16 +53,21 @@ class ValueRow extends StatelessWidget {
     var theme = Theme.of(context);
 
     return ConstrainedBox(
-      constraints: const BoxConstraints(minWidth: 70),
+      constraints: const BoxConstraints(minWidth: 75),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Icon(
-            device.deviceType.keyIcons[i].icon,
-            color: theme.colorScheme.secondary,
+            device.deviceType.measurementProperties[i].icon,
+            color: theme.colorScheme.primary,
           ),
-          Text(measurement.getDataPoint(device.deviceType.keyIcons[i].key) +
-              device.deviceType.keyIcons[i].unit),
+          SizedBox(
+            width: 5,
+          ),
+          Text(device.deviceType.measurementProperties[i].formatter(
+              measurement.getDataPoint(
+                      device.deviceType.measurementProperties[i].key) +
+                  device.deviceType.measurementProperties[i].unit)),
         ],
       ),
     );

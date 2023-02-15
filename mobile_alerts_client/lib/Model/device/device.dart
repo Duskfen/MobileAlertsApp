@@ -20,6 +20,7 @@ class Device extends ChangeNotifier {
 
   String? name;
   String? get getName => name;
+  int order;
   // ignore: invalid_annotation_target
   @ignore //is needed.. or the builder tries to use it as a field
   set setName(String? name) {
@@ -37,19 +38,8 @@ class Device extends ChangeNotifier {
 
   final IsarLinks<Measurement> measurements = IsarLinks();
 
-  Device({required this.deviceid, this.name}) {
+  Device({required this.deviceid, required this.order, this.name}) {
     deviceType = DeviceType.fromId(deviceid);
-  }
-
-  // Device({
-  //   required deviceid,
-  // }) {
-  //   this.deviceid = deviceid;
-  //   deviceType = DeviceType.fromId(deviceid);
-  // }
-
-  static Future<Device> createFetchDevice(String deviceid) async {
-    return Device.fromJson(jsonDecode(await _fetchDevice(deviceid)));
   }
 
   static Future<String> _fetchDevice(String deviceid) async {
@@ -65,27 +55,6 @@ class Device extends ChangeNotifier {
     } else {
       throw UnimplementedError(); //TODO Errorhandling
     }
-  }
-
-  /// `dart:convert`
-  ///
-  /// Parses the json and returns the resulting Json object as [Device].
-  factory Device.fromJson(Map<String, dynamic> json) {
-    json = (json['devices'] as List<dynamic>).first as Map<String, dynamic>;
-    var d = Device(
-      deviceid: json['deviceid'],
-    )
-      ..lastseen = json['lastseen']
-      ..lowbattery = json['lowbattery']
-      ..deviceType = DeviceType.fromId(json["deviceid"]);
-
-    var m = (Measurement.fromMap(
-      json['measurement'],
-    ));
-
-    d.measurements.add(m);
-
-    return d;
   }
 
   Future<void> getNewMeasurement() async {

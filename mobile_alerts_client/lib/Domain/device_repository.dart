@@ -1,6 +1,5 @@
 import 'package:isar/isar.dart';
 import 'package:mobile_alerts_client/Model/device/measurements/measurement.dart';
-import 'package:mobile_alerts_client/Model/device/measurements/measurementid02.dart';
 
 import '../Model/device/device.dart';
 

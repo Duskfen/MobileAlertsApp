@@ -14,7 +14,7 @@ class Measurement {
   DateTime measureTime;
   DateTime serverReceiveTime;
   DateTime fetchTime;
-  bool lowBattery;
+  bool? lowBattery;
   Id id = Isar.autoIncrement;
   String
       rawData; //Required because IsarLink does not support Generics or abstract types in links
@@ -45,7 +45,7 @@ class Measurement {
             DateTime.fromMillisecondsSinceEpoch((data['ts'] as int) * 1000),
         serverReceiveTime:
             DateTime.fromMillisecondsSinceEpoch((data['c'] as int) * 1000),
-        lowBattery: data['lb'] as bool,
+        lowBattery: data['lb'] as bool?,
         rawData: jsonEncode(data),
         fetchTime: DateTime.now(),
         // temperature: (data['t1'] as num).toDouble(),

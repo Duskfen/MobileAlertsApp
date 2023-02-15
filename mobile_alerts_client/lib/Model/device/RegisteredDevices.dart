@@ -21,7 +21,8 @@ class RegisteredDevices extends ChangeNotifier {
   }
 
   RegisteredDevices() {
-    devices = DeviceRepository.getAll();
+    devices = DeviceRepository.getAll()
+      ..sort((a, b) => a.order.compareTo(b.order));
   }
 
   Future<void> updateDeviceData() async {
@@ -32,10 +33,24 @@ class RegisteredDevices extends ChangeNotifier {
   }
 
   Future<void> addDevice(String id) async {
-    Device newdevice = Device(deviceid: id);
+    Device newdevice = Device(deviceid: id, order: devices.length);
     DeviceRepository.save(newdevice);
     devices.add(newdevice);
     notifyListeners();
     unawaited(newdevice.getNewMeasurement());
+  }
+
+  void reorder(int oldIndex, int newIndex) {
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+    final dragged = devices.removeAt(oldIndex);
+    devices.insert(newIndex, dragged);
+
+    for (var i = 0; i < devices.length; i++) {
+      devices[i].order = i;
+      DeviceRepository.update(devices[i]);
+    }
+    notifyListeners();
   }
 }
