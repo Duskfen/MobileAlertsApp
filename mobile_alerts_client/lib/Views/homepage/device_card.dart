@@ -108,7 +108,7 @@ class HeadLeft extends StatelessWidget {
           onTap: () async {
             final String? result = (await prompt(
               context,
-              title: const Text("New device name"),
+              title: const Text("change device name"),
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter a valid name';

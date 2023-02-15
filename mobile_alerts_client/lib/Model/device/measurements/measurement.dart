@@ -1,10 +1,5 @@
 import 'dart:convert';
-
-import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
-import 'package:mobile_alerts_client/Model/device/device_types.dart';
-
-import 'measurementid02.dart';
 
 part 'measurement.g.dart';
 

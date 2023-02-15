@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:mobile_alerts_client/Model/device/RegisteredDevices.dart';
+import 'package:mobile_alerts_client/Model/device/registered_devices.dart';
 import 'package:provider/provider.dart';
 
 import 'device_list.dart';

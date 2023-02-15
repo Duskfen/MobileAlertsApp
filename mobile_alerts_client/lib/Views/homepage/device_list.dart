@@ -1,12 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_alerts_client/Model/device/device_types.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:provider/provider.dart';
 
-import '../../Model/device/RegisteredDevices.dart';
+import '../../Model/device/registered_devices.dart';
 import 'device_card.dart';
 
 class DeviceList extends StatelessWidget {

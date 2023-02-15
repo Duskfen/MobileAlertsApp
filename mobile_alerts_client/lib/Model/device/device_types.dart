@@ -1,9 +1,6 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:mobile_alerts_client/Model/device/measurements/wind_directions.dart';
 
-//TODO beim hinzufügen von an sensor (id03) hob i an fehler griagt
 enum DeviceType {
   id01("01", [
     MeasurementProperty(

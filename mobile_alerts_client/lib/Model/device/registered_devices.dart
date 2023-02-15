@@ -1,10 +1,7 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:isar/isar.dart';
 import 'package:mobile_alerts_client/Domain/device_repository.dart';
-import 'package:mobile_alerts_client/Model/device/measurements/measurement.dart';
 import 'device.dart';
 
 class RegisteredDevices extends ChangeNotifier {
