@@ -6,6 +6,7 @@ import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:provider/provider.dart';
 
 import '../../Model/device/registered_devices.dart';
+import '../tools/message_clipper.dart';
 import 'device_context_menu.dart';
 import 'device_card.dart';
 
@@ -41,65 +42,7 @@ class DeviceList extends StatelessWidget {
               ChangeNotifierProvider.value(
                   key: Key("device_$i"),
                   value: registeredDevices.devices[i],
-                  child: DeviceContextMenuRegion(
-                      contextMenuBuilder: (
-                        BuildContext context,
-                        Offset offset,
-                      ) {
-                        ThemeData theme = Theme.of(context);
-                        return AdaptiveTextSelectionToolbar(
-                          anchors: TextSelectionToolbarAnchors(
-                              primaryAnchor: offset),
-                          children: [
-                            Card(
-                              color: theme.colorScheme.background,
-                              margin: EdgeInsets.zero,
-                              elevation: 0,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: const [
-                                        Text("delete"),
-                                        SizedBox(width: 20),
-                                        Icon(Icons.delete),
-                                      ],
-                                    ),
-                                    Divider()
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: const [
-                                        Text("rename"),
-                                        SizedBox(width: 20),
-                                        Icon(Icons.edit),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )
-                          ],
-                        );
-                        // return AdaptiveTextSelectionToolbar.buttonItems(
-                        //   buttonItems: [
-                        //     ContextMenuButtonItem(
-                        //         onPressed: () {
-                        //           ContextMenuController.removeAny();
-                        //           throw UnimplementedError();
-                        //         },
-                        //         label: "delete")
-                        //   ],
-                        //   anchors: TextSelectionToolbarAnchors(
-                        //       primaryAnchor: offset),
-                        // );
-                      },
-                      child: const DeviceCard())),
+                  child: const ContextMenuContent()),
             const SizedBox(
               key: Key("devices_padbox"),
               height: 85,
@@ -108,6 +51,54 @@ class DeviceList extends StatelessWidget {
         ),
       );
     });
+  }
+}
+
+class ContextMenuContent extends StatelessWidget {
+  const ContextMenuContent({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DeviceContextMenuRegion(
+        contextMenuBuilder: (
+          BuildContext context,
+          Offset offset,
+        ) {
+          ThemeData theme = Theme.of(context);
+          return AdaptiveTextSelectionToolbar(
+            anchors: TextSelectionToolbarAnchors(primaryAnchor: offset),
+            children: [
+              MaterialButton(
+                onPressed: () {
+                  throw UnimplementedError();
+                },
+                child: Icon(Icons.delete),
+              ),
+              const VerticalDivider(),
+              MaterialButton(
+                onPressed: () {
+                  throw UnimplementedError();
+                },
+                child: Icon(Icons.edit),
+              ),
+            ],
+          );
+          // return AdaptiveTextSelectionToolbar.buttonItems(
+          //   buttonItems: [
+          //     ContextMenuButtonItem(
+          //         onPressed: () {
+          //           ContextMenuController.removeAny();
+          //           throw UnimplementedError();
+          //         },
+          //         label: "delete")
+          //   ],
+          //   anchors: TextSelectionToolbarAnchors(
+          //       primaryAnchor: offset),
+          // );
+        },
+        child: const DeviceCard());
   }
 }
 

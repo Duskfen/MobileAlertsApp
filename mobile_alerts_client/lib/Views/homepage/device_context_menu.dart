@@ -28,6 +28,7 @@ class DeviceContextMenuRegion extends StatefulWidget {
 
 class DeviceContextMenuRegionState extends State<DeviceContextMenuRegion> {
   Offset? _longPressOffset;
+  GlobalKey key = GlobalKey();
 
   final ContextMenuController _contextMenuController = ContextMenuController();
 
@@ -56,7 +57,13 @@ class DeviceContextMenuRegionState extends State<DeviceContextMenuRegion> {
   }
 
   void _onLongPressStart(LongPressStartDetails details) {
-    _longPressOffset = details.globalPosition;
+    final RenderBox renderBox =
+        key.currentContext?.findRenderObject() as RenderBox;
+    final Offset offset =
+        renderBox.localToGlobal(Offset.zero); // dx, dy = top left
+
+    _longPressOffset = Offset(offset.dx + 100,
+        offset.dy + renderBox.size.height + 56); //details.globalPosition;
   }
 
   void _onLongPress() {
@@ -87,12 +94,12 @@ class DeviceContextMenuRegionState extends State<DeviceContextMenuRegion> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onSecondaryTapUp: _onSecondaryTapUp,
-      onTap: _onTap,
-      onLongPress: _longPressEnabled ? _onLongPress : null,
-      onLongPressStart: _longPressEnabled ? _onLongPressStart : null,
-      child: widget.child,
-    );
+        key: key,
+        behavior: HitTestBehavior.opaque,
+        onSecondaryTapUp: _onSecondaryTapUp,
+        onTap: _onTap,
+        onLongPress: _longPressEnabled ? _onLongPress : null,
+        onLongPressStart: _longPressEnabled ? _onLongPressStart : null,
+        child: widget.child);
   }
 }
