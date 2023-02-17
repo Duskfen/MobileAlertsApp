@@ -26,9 +26,14 @@ class DeviceContextMenuRegion extends StatefulWidget {
       DeviceContextMenuRegionState();
 }
 
-class DeviceContextMenuRegionState extends State<DeviceContextMenuRegion> {
+class DeviceContextMenuRegionState extends State<DeviceContextMenuRegion>
+    with TickerProviderStateMixin {
   Offset? _longPressOffset;
-  GlobalKey key = GlobalKey();
+  final GlobalKey _key = GlobalKey();
+  late final AnimationController _controller = AnimationController(
+      duration: const Duration(milliseconds: 200), vsync: this);
+  late final Animation<double> _animation = Tween<double>(begin: 1, end: 1.02)
+      .animate(CurvedAnimation(parent: _controller, curve: Curves.ease));
 
   final ContextMenuController _contextMenuController = ContextMenuController();
 
@@ -53,17 +58,17 @@ class DeviceContextMenuRegionState extends State<DeviceContextMenuRegion> {
     if (!_contextMenuController.isShown) {
       return;
     }
-    _hide();
+    hide();
   }
 
   void _onLongPressStart(LongPressStartDetails details) {
     final RenderBox renderBox =
-        key.currentContext?.findRenderObject() as RenderBox;
+        _key.currentContext?.findRenderObject() as RenderBox;
     final Offset offset =
         renderBox.localToGlobal(Offset.zero); // dx, dy = top left
 
-    _longPressOffset = Offset(offset.dx + 100,
-        offset.dy + renderBox.size.height + 56); //details.globalPosition;
+    _longPressOffset = Offset(
+        details.globalPosition.dx, offset.dy + 20); //details.globalPosition;
   }
 
   void _onLongPress() {
@@ -73,33 +78,83 @@ class DeviceContextMenuRegionState extends State<DeviceContextMenuRegion> {
   }
 
   void _show(Offset position) {
+    _controller.forward();
     _contextMenuController.show(
       context: context,
       contextMenuBuilder: (BuildContext context) {
-        return widget.contextMenuBuilder(context, position);
+        return Stack(
+          children: [
+            widget.contextMenuBuilder(context, position),
+            if (defaultTargetPlatform == TargetPlatform.android)
+              Positioned(
+                top: position.dy - 8,
+                left: position.dx - 12,
+                child: CustomPaint(
+                  painter: TrianglePainter(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .background), // adjust the color of the triangle to your liking
+                  size: const Size(
+                      24, 12), // adjust the size of the triangle to your liking
+                ),
+              ),
+          ],
+        );
       },
     );
   }
 
-  void _hide() {
+  void hide() {
     _contextMenuController.remove();
+    _controller.reverse();
   }
 
   @override
   void dispose() {
-    _hide();
+    hide();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        key: key,
-        behavior: HitTestBehavior.opaque,
-        onSecondaryTapUp: _onSecondaryTapUp,
-        onTap: _onTap,
-        onLongPress: _longPressEnabled ? _onLongPress : null,
-        onLongPressStart: _longPressEnabled ? _onLongPressStart : null,
-        child: widget.child);
+    return ScaleTransition(
+      scale: _animation,
+      child: GestureDetector(
+          key: _key,
+          behavior: HitTestBehavior.opaque,
+          onSecondaryTapUp: _onSecondaryTapUp,
+          onTap: _onTap,
+          onLongPress: _longPressEnabled ? _onLongPress : null,
+          onLongPressStart: _longPressEnabled ? _onLongPressStart : null,
+          child: widget.child),
+    );
   }
+}
+
+class TrianglePainter extends CustomPainter {
+  final Color color;
+
+  TrianglePainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    Path path = Path();
+    path.moveTo(0, 0.1);
+    path.lineTo(size.width, 0.1);
+    path.lineTo(size.width / 2, size.height + 0.1);
+    path.close();
+    canvas.drawShadow(path, Colors.black, 1.5, false);
+
+    path = Path();
+    path.moveTo(0, 0);
+    path.lineTo(size.width, 0);
+    path.lineTo(size.width / 2, size.height);
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

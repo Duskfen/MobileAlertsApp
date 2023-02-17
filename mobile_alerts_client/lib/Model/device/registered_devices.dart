@@ -39,6 +39,12 @@ class RegisteredDevices extends ChangeNotifier {
     unawaited(newdevice.getNewMeasurement());
   }
 
+  Future<void> remove(Device device) async {
+    devices.remove(device);
+    notifyListeners();
+    DeviceRepository.remove(device);
+  }
+
   void reorder(int oldIndex, int newIndex) {
     if (oldIndex < newIndex) {
       newIndex -= 1;

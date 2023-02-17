@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_alerts_client/Views/homepage/device_context_menu.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -7,31 +8,73 @@ import '../../globals.dart';
 import 'Measurements/measurement_content.dart';
 
 class DeviceCard extends StatelessWidget {
-  const DeviceCard({
-    super.key,
-  });
-
-  //TODO a bit more color
+  const DeviceCard({super.key, required this.removeDevice});
+  final Function(Device device) removeDevice;
 
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     return Consumer<Device>(builder: (context, device, child) {
-      return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Header(theme: theme, device: device),
-              const Divider(),
-              device.measurements.isNotEmpty == true
-                  ? MeasurementContent(device: device)
-                  : const SizedBox.shrink(),
-            ],
+      return DeviceContextMenuRegion(
+        contextMenuBuilder: (context, offset) {
+          return ContextMenuContent(
+            offset: offset,
+            device: device,
+            removeDevice: removeDevice,
+          );
+        },
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Header(theme: theme, device: device),
+                const Divider(),
+                device.measurements.isNotEmpty == true
+                    ? MeasurementContent(device: device)
+                    : const SizedBox.shrink(),
+              ],
+            ),
           ),
         ),
       );
     });
+  }
+}
+
+class ContextMenuContent extends StatelessWidget {
+  const ContextMenuContent(
+      {super.key,
+      required this.offset,
+      required this.device,
+      required this.removeDevice});
+
+  final Offset offset;
+  final Device device;
+  final Function(Device device) removeDevice;
+
+  @override
+  Widget build(BuildContext context) {
+    return AdaptiveTextSelectionToolbar(
+      anchors: TextSelectionToolbarAnchors(primaryAnchor: offset),
+      children: [
+        MaterialButton(
+          onPressed: () {
+            ContextMenuController.removeAny();
+            removeDevice(device);
+          },
+          child: const Icon(Icons.delete),
+        ),
+        const VerticalDivider(),
+        MaterialButton(
+          onPressed: () async {
+            ContextMenuController.removeAny();
+            await renameDevice(context, device);
+          },
+          child: const Icon(Icons.edit),
+        ),
+      ],
+    );
   }
 }
 
@@ -85,9 +128,23 @@ class HeadLeft extends StatelessWidget {
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         ((device.name == null || device.name?.isEmpty == true)
-            ? Text(
-                device.deviceid,
-                style: theme.textTheme.bodyLarge,
+            ? Row(
+                children: [
+                  Text(
+                    device.deviceid,
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      await renameDevice(context, device);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Icon(Icons.edit,
+                          size: 16, color: theme.colorScheme.secondary),
+                    ),
+                  ),
+                ],
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,31 +161,25 @@ class HeadLeft extends StatelessWidget {
                   )
                 ],
               )),
-        GestureDetector(
-          onTap: () async {
-            final String? result = (await prompt(
-              context,
-              title: const Text("change device name"),
-              validator: (String? value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a valid name';
-                }
-                return null;
-              },
-              isSelectedInitialValue: true,
-              initialValue: device.getName,
-            ));
-
-            if (result == null) return;
-            device.setName = result;
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child:
-                Icon(Icons.edit, size: 16, color: theme.colorScheme.secondary),
-          ),
-        ),
       ],
     );
   }
+}
+
+Future<void> renameDevice(BuildContext context, Device device) async {
+  final String? result = await prompt(
+    context,
+    title: const Text("change device name"),
+    validator: (String? value) {
+      if (value == null || value.isEmpty) {
+        return 'Please enter a valid name';
+      }
+      return null;
+    },
+    isSelectedInitialValue: true,
+    initialValue: device.getName,
+  );
+
+  if (result == null) return;
+  device.setName = result;
 }

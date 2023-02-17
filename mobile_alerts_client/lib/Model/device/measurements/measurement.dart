@@ -45,6 +45,4 @@ class Measurement {
         fetchTime: DateTime.now(),
         // temperature: (data['t1'] as num).toDouble(),
       );
-  //TODO support other Sensors see https://mobile-alerts.eu/info/public_server_api_documentation.pdf
-  //check from highest-specific to the least specific
 }
