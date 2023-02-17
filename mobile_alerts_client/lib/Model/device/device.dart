@@ -1,16 +1,23 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:isar/isar.dart';
 import 'package:mobile_alerts_client/Domain/device_repository.dart';
 import 'package:mobile_alerts_client/Model/device/device_types.dart';
 
+import 'measurements/fetch_error.dart';
 import 'measurements/measurement.dart';
-import 'package:http/http.dart' as http;
 
 part 'device.g.dart';
 
 //flutter pub run build_runner build
+
+enum DeviceState {
+  ready,
+  fetching,
+  error,
+}
 
 @Collection()
 class Device extends ChangeNotifier {
@@ -31,6 +38,12 @@ class Device extends ChangeNotifier {
 
   int? lastseen;
 
+  @ignore
+  DeviceState state = DeviceState.ready;
+
+  @ignore
+  FetchError? error;
+
   bool? lowbattery;
 
   @enumerated
@@ -43,32 +56,40 @@ class Device extends ChangeNotifier {
     deviceType = DeviceType.fromId(deviceid);
   }
 
-  static Future<String> _fetchDevice(String deviceid) async {
-    final response = await http.post(
+  //
+  static Future<Response> _fetchDevice(String deviceid) async {
+    return await post(
         Uri.parse("https://www.data199.com/api/pv1/device/lastmeasurement"),
         body: "deviceids=$deviceid",
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         });
-
-    if (response.statusCode == 200) {
-      return response.body;
-    } else {
-      throw UnimplementedError(); //TODO Errorhandling
-    }
   }
 
   Future<void> getNewMeasurement() async {
-    var json = jsonDecode(await Device._fetchDevice(deviceid));
-    json = (json['devices'] as List<dynamic>).first as Map<String, dynamic>;
+    if (state == DeviceState.fetching) return;
+    state = DeviceState.fetching;
+    notifyListeners();
 
-    var measurement = (Measurement.fromMap(json['measurement']));
+    Response r = await Device._fetchDevice(deviceid);
+    if (r.statusCode != 200) {
+      error = FetchError.fromResponse(r);
+      state = DeviceState.error;
+    } else {
+      error = null;
 
-    measurements.add(measurement);
-    lastseen = json['lastseen'];
-    lowbattery = json['lowbattery'];
-    DeviceRepository.update(this);
-    DeviceRepository.updateMeasurements(this);
+      var json = jsonDecode(r.body);
+      json = (json['devices'] as List<dynamic>).first as Map<String, dynamic>;
+
+      var measurement = (Measurement.fromMap(json['measurement']));
+
+      measurements.add(measurement);
+      lastseen = json['lastseen'];
+      lowbattery = json['lowbattery'];
+      DeviceRepository.update(this);
+      DeviceRepository.updateMeasurements(this);
+      state = DeviceState.ready;
+    }
     notifyListeners();
   }
 

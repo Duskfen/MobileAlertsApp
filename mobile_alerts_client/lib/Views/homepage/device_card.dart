@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_alerts_client/Views/homepage/Measurements/measurement_error_content.dart';
 import 'package:mobile_alerts_client/Views/homepage/device_context_menu.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:provider/provider.dart';
@@ -30,15 +31,29 @@ class DeviceCard extends StatelessWidget {
               children: [
                 Header(theme: theme, device: device),
                 const Divider(),
-                device.measurements.isNotEmpty == true
-                    ? MeasurementContent(device: device)
-                    : const SizedBox.shrink(),
+                deviceStateAwareContent(theme, device)
               ],
             ),
           ),
         ),
       );
     });
+  }
+
+  Widget deviceStateAwareContent(ThemeData theme, Device device) {
+    switch (device.state) {
+      case DeviceState.fetching:
+        return const CircularProgressIndicator();
+      case DeviceState.ready:
+        if (device.measurements.isEmpty) {
+          return const CircularProgressIndicator();
+        }
+        return MeasurementContent(device: device);
+      case DeviceState.error:
+        return MeasurementErrorContent(device: device);
+      default:
+        throw UnimplementedError();
+    }
   }
 }
 
@@ -100,7 +115,7 @@ class Header extends StatelessWidget {
               HeadLeft(device: device, theme: theme),
               if (device.measurements.isNotEmpty)
                 Text(
-                  Globals.dateFormat(device.measurements.last.measureTime),
+                  "${Globals.dateFormat(device.measurements.last.measureTime)}",
                   style: theme.textTheme.bodyLarge,
                 ),
             ],

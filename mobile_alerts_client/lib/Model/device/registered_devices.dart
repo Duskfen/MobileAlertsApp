@@ -27,7 +27,22 @@ class RegisteredDevices extends ChangeNotifier {
   Future<void> updateDeviceData() async {
     //https://dart.dev/guides/language/language-tour#generators
     for (final device in devices) {
-      unawaited(device.getNewMeasurement()); //because it notifies listeners
+      if (device.state == DeviceState.error) {
+        if (device.error!.time.difference(DateTime.now()).abs() >
+            const Duration(minutes: 15)) {
+          unawaited(device.getNewMeasurement()); //because it notifies listeners
+        }
+        return;
+      }
+      if (device.measurements.isEmpty) {
+        unawaited(device.getNewMeasurement()); //because it notifies listeners
+        return;
+      }
+      if (device.measurements.last.fetchTime.difference(DateTime.now()).abs() >
+          const Duration(minutes: 15)) {
+        unawaited(device.getNewMeasurement()); //because it notifies listeners
+        return;
+      }
     }
   }
 

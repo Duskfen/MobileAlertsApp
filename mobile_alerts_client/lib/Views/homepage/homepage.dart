@@ -15,20 +15,11 @@ class Homepage extends StatelessWidget {
       create: (context) {
         final rd = RegisteredDevices();
         //If the last poll is older then 15min
-        if ((rd.lastpoll?.difference(DateTime.now()).abs() ??
-                const Duration(minutes: 16)) >
-            const Duration(minutes: 15)) {
-          rd.updateDeviceData();
-        }
+
+        rd.updateDeviceData();
+
         Timer.periodic(const Duration(seconds: 10), (timer) {
-          //maybe lober interval but listen to is window active //maybe https://api.flutter.dev/flutter/widgets/WidgetsBindingObserver-class.html
-          //TODO move todos to github issues
-          //because it does not work in background
-          if ((rd.lastpoll?.difference(DateTime.now()).abs() ??
-                  const Duration(minutes: 16)) >
-              const Duration(minutes: 15)) {
-            rd.updateDeviceData();
-          }
+          rd.updateDeviceData();
         });
         return rd;
       },

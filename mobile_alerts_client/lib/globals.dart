@@ -1,7 +1,10 @@
 import 'package:intl/intl.dart';
 
 class Globals {
-  static String dateFormat(DateTime date) {
+  static String? dateFormat(DateTime? date) {
+    if (date == null) {
+      return null;
+    }
     final now = DateTime.now();
     if (date.year == now.year &&
         date.month == now.month &&
