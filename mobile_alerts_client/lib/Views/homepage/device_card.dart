@@ -129,6 +129,7 @@ class HeadLeft extends StatelessWidget {
       children: [
         ((device.name == null || device.name?.isEmpty == true)
             ? Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     device.deviceid,
@@ -169,7 +170,7 @@ class HeadLeft extends StatelessWidget {
 Future<void> renameDevice(BuildContext context, Device device) async {
   final String? result = await prompt(
     context,
-    title: const Text("change device name"),
+    title: const Text("name device"),
     validator: (String? value) {
       if (value == null || value.isEmpty) {
         return 'Please enter a valid name';

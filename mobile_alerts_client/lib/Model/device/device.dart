@@ -38,7 +38,8 @@ class Device extends ChangeNotifier {
 
   final IsarLinks<Measurement> measurements = IsarLinks();
 
-  Device({required this.deviceid, required this.order, this.name}) {
+  Device({required String deviceid, required this.order, this.name})
+      : deviceid = deviceid.toUpperCase() {
     deviceType = DeviceType.fromId(deviceid);
   }
 
