@@ -7,18 +7,6 @@ import 'device.dart';
 class RegisteredDevices extends ChangeNotifier {
   List<Device> devices = [];
 
-  /// lastpoll is intendet just to give a vague idea when the last poll was
-  DateTime? get lastpoll {
-    Iterable<DateTime> test = devices
-        .expand((element) => element.measurements)
-        .map((e) => e.fetchTime);
-    if (test.isEmpty) return null;
-    return test.reduce((value, maxi) {
-      if (value.isAfter(maxi)) return value;
-      return maxi;
-    });
-  }
-
   RegisteredDevices() {
     devices = DeviceRepository.getAll()
       ..sort((a, b) => a.order.compareTo(b.order));
@@ -60,12 +48,12 @@ class RegisteredDevices extends ChangeNotifier {
     DeviceRepository.remove(device);
   }
 
-  void reorder(int oldIndex, int newIndex) {
-    if (oldIndex < newIndex) {
-      newIndex -= 1;
+  void reorder(Device device, int change) {
+    Device old = device;
+    if (old.order + change >= 0 && old.order + change < devices.length) {
+      devices.remove(device);
+      devices.insert(old.order + change, old);
     }
-    final dragged = devices.removeAt(oldIndex);
-    devices.insert(newIndex, dragged);
 
     for (var i = 0; i < devices.length; i++) {
       devices[i].order = i;

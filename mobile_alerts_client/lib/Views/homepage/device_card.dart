@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_alerts_client/Model/device/registered_devices.dart';
 import 'package:mobile_alerts_client/Views/homepage/Measurements/measurement_error_content.dart';
 import 'package:mobile_alerts_client/Views/homepage/device_context_menu.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
@@ -9,8 +10,10 @@ import '../../globals.dart';
 import 'Measurements/measurement_content.dart';
 
 class DeviceCard extends StatelessWidget {
-  const DeviceCard({super.key, required this.removeDevice});
+  const DeviceCard(
+      {super.key, required this.removeDevice, required this.reoderDevice});
   final Function(Device device) removeDevice;
+  final Function(Device device, int change) reoderDevice;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +25,7 @@ class DeviceCard extends StatelessWidget {
             offset: offset,
             device: device,
             removeDevice: removeDevice,
+            reoderDevice: reoderDevice,
           );
         },
         child: Card(
@@ -62,11 +66,13 @@ class ContextMenuContent extends StatelessWidget {
       {super.key,
       required this.offset,
       required this.device,
-      required this.removeDevice});
+      required this.removeDevice,
+      required this.reoderDevice});
 
   final Offset offset;
   final Device device;
   final Function(Device device) removeDevice;
+  final Function(Device device, int change) reoderDevice;
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +94,28 @@ class ContextMenuContent extends StatelessWidget {
           },
           child: const Icon(Icons.edit),
         ),
+        const VerticalDivider(),
+        GestureDetector(
+          onTap: () {
+            ContextMenuController.removeAny();
+            reoderDevice(device, -1);
+          },
+          child: const SizedBox(
+            width: 40,
+            child: Expanded(child: Center(child: Icon(Icons.arrow_upward))),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            ContextMenuController.removeAny();
+            reoderDevice(device, 1);
+          },
+          child: const SizedBox(
+            width: 40,
+            child: Expanded(child: Center(child: Icon(Icons.arrow_downward))),
+          ),
+        ),
+        const VerticalDivider(),
       ],
     );
   }

@@ -40,8 +40,11 @@ class DeviceList extends StatelessWidget {
                   key: Key("device_$i"),
                   value: registeredDevices.devices[i],
                   child: DeviceCard(
-                      removeDevice: (Device device) =>
-                          registeredDevices.remove(device))),
+                    removeDevice: (Device device) =>
+                        registeredDevices.remove(device),
+                    reoderDevice: (device, change) =>
+                        registeredDevices.reorder(device, change),
+                  )),
             const SizedBox(
               key: Key("devices_padbox"),
               height: 85,
