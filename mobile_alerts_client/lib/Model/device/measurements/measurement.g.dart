@@ -100,7 +100,7 @@ Measurement _measurementDeserialize(
 ) {
   final object = Measurement(
     fetchTime: reader.readDateTime(offsets[0]),
-    lowBattery: reader.readBool(offsets[2]),
+    lowBattery: reader.readBoolOrNull(offsets[2]),
     measureTime: reader.readDateTime(offsets[3]),
     measurementId: reader.readLong(offsets[4]),
     rawData: reader.readString(offsets[5]),
@@ -122,7 +122,7 @@ P _measurementDeserializeProp<P>(
     case 1:
       return (reader.readLong(offset)) as P;
     case 2:
-      return (reader.readBool(offset)) as P;
+      return (reader.readBoolOrNull(offset)) as P;
     case 3:
       return (reader.readDateTime(offset)) as P;
     case 4:
@@ -394,7 +394,25 @@ extension MeasurementQueryFilter
   }
 
   QueryBuilder<Measurement, Measurement, QAfterFilterCondition>
-      lowBatteryEqualTo(bool value) {
+      lowBatteryIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'lowBattery',
+      ));
+    });
+  }
+
+  QueryBuilder<Measurement, Measurement, QAfterFilterCondition>
+      lowBatteryIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'lowBattery',
+      ));
+    });
+  }
+
+  QueryBuilder<Measurement, Measurement, QAfterFilterCondition>
+      lowBatteryEqualTo(bool? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'lowBattery',
@@ -971,7 +989,7 @@ extension MeasurementQueryProperty
     });
   }
 
-  QueryBuilder<Measurement, bool, QQueryOperations> lowBatteryProperty() {
+  QueryBuilder<Measurement, bool?, QQueryOperations> lowBatteryProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lowBattery');
     });

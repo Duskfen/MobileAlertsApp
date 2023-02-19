@@ -14,12 +14,11 @@ class Homepage extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) {
         final rd = RegisteredDevices();
-        //If the last poll is older then 15min
 
         rd.updateDeviceData();
 
         Timer.periodic(const Duration(seconds: 10), (timer) {
-          rd.updateDeviceData();
+          rd.updateDeviceData(); //device will check for itself if its really ready to update
         });
         return rd;
       },

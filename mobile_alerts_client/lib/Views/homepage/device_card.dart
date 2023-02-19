@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_alerts_client/Model/device/registered_devices.dart';
 import 'package:mobile_alerts_client/Views/homepage/Measurements/measurement_error_content.dart';
 import 'package:mobile_alerts_client/Views/homepage/device_context_menu.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';

@@ -20,16 +20,16 @@ class RegisteredDevices extends ChangeNotifier {
             const Duration(minutes: 15)) {
           unawaited(device.getNewMeasurement()); //because it notifies listeners
         }
-        return;
+        continue;
       }
       if (device.measurements.isEmpty) {
         unawaited(device.getNewMeasurement()); //because it notifies listeners
-        return;
+        continue;
       }
       if (device.measurements.last.fetchTime.difference(DateTime.now()).abs() >
           const Duration(minutes: 15)) {
         unawaited(device.getNewMeasurement()); //because it notifies listeners
-        return;
+        continue;
       }
     }
   }

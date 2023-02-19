@@ -7,8 +7,6 @@ import 'package:provider/provider.dart';
 
 import '../../Model/device/device.dart';
 import '../../Model/device/registered_devices.dart';
-import '../tools/message_clipper.dart';
-import 'device_context_menu.dart';
 import 'device_card.dart';
 
 class DeviceList extends StatelessWidget {
@@ -81,7 +79,7 @@ class ElevatedSensorAddButton extends StatelessWidget {
           return 'Please enter a valid ID';
         }
         try {
-          DeviceType.fromId(value);
+          DeviceType.fromId(value.toUpperCase());
         } catch (e) {
           return 'This Sensortype is not supported';
         }
