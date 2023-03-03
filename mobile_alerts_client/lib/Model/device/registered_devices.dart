@@ -48,12 +48,12 @@ class RegisteredDevices extends ChangeNotifier {
     DeviceRepository.remove(device);
   }
 
-  void reorder(Device device, int change) {
-    Device old = device;
-    if (old.order + change >= 0 && old.order + change < devices.length) {
-      devices.remove(device);
-      devices.insert(old.order + change, old);
+  void reorder(int oldIndex, int newIndex) {
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
     }
+    final dragged = devices.removeAt(oldIndex);
+    devices.insert(newIndex, dragged);
 
     for (var i = 0; i < devices.length; i++) {
       devices[i].order = i;

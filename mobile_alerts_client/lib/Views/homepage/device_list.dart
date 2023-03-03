@@ -21,7 +21,11 @@ class DeviceList extends StatelessWidget {
       return Scaffold(
         floatingActionButton:
             ElevatedSensorAddButton(devices: registeredDevices),
-        body: ListView(
+        body: ReorderableListView(
+          onReorder: (int oldIndex, int newIndex) {
+            registeredDevices.reorder(oldIndex, newIndex);
+          },
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 80),
           children: [
             if (registeredDevices.devices.isEmpty)
               const Card(
@@ -38,15 +42,8 @@ class DeviceList extends StatelessWidget {
                   key: Key("device_$i"),
                   value: registeredDevices.devices[i],
                   child: DeviceCard(
-                    removeDevice: (Device device) =>
-                        registeredDevices.remove(device),
-                    reoderDevice: (device, change) =>
-                        registeredDevices.reorder(device, change),
-                  )),
-            const SizedBox(
-              key: Key("devices_padbox"),
-              height: 85,
-            ),
+                      removeDevice: (Device device) =>
+                          registeredDevices.remove(device))),
           ],
         ),
       );

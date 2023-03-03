@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_alerts_client/Views/homepage/Measurements/measurement_error_content.dart';
-import 'package:mobile_alerts_client/Views/homepage/device_context_menu.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -9,34 +8,29 @@ import '../../globals.dart';
 import 'Measurements/measurement_content.dart';
 
 class DeviceCard extends StatelessWidget {
-  const DeviceCard(
-      {super.key, required this.removeDevice, required this.reoderDevice});
+  const DeviceCard({
+    super.key,
+    required this.removeDevice,
+  });
   final Function(Device device) removeDevice;
-  final Function(Device device, int change) reoderDevice;
 
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     return Consumer<Device>(builder: (context, device, child) {
-      return DeviceContextMenuRegion(
-        contextMenuBuilder: (context, offset) {
-          return ContextMenuContent(
-            offset: offset,
-            device: device,
-            removeDevice: removeDevice,
-            reoderDevice: reoderDevice,
-          );
-        },
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Header(theme: theme, device: device),
-                const Divider(),
-                deviceStateAwareContent(theme, device)
-              ],
-            ),
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Header(
+                theme: theme,
+                device: device,
+                removeDevice: removeDevice,
+              ),
+              const Divider(),
+              deviceStateAwareContent(theme, device)
+            ],
           ),
         ),
       );
@@ -78,13 +72,6 @@ class ContextMenuContent extends StatelessWidget {
     return AdaptiveTextSelectionToolbar(
       anchors: TextSelectionToolbarAnchors(primaryAnchor: offset),
       children: [
-        MaterialButton(
-          onPressed: () {
-            ContextMenuController.removeAny();
-            removeDevice(device);
-          },
-          child: const Icon(Icons.delete),
-        ),
         const VerticalDivider(),
         MaterialButton(
           onPressed: () async {
@@ -125,10 +112,12 @@ class Header extends StatelessWidget {
     super.key,
     required this.theme,
     required this.device,
+    required this.removeDevice,
   });
 
   final ThemeData theme;
   final Device device;
+  final Function(Device device) removeDevice;
 
   @override
   Widget build(BuildContext context) {
@@ -137,14 +126,59 @@ class Header extends StatelessWidget {
         return SizedBox(
           width: constraints.maxWidth,
           child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
             alignment: WrapAlignment.spaceBetween,
             children: [
               HeadLeft(device: device, theme: theme),
-              if (device.measurements.isNotEmpty)
-                Text(
-                  "${Globals.dateFormat(device.measurements.last.measureTime)}",
-                  style: theme.textTheme.bodyLarge,
-                ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (device.measurements.isNotEmpty)
+                    Text(
+                      "${Globals.dateFormat(device.measurements.last.measureTime)}",
+                      style: theme.textTheme.bodyLarge,
+                    ),
+                  PopupMenuButton(
+                      onSelected: (selection) async {
+                        switch (selection) {
+                          case 0:
+                            await renameDevice(context, device);
+                            break;
+                          case 1:
+                            await removeDevice(device);
+                            break;
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => [
+                            PopupMenuItem<int>(
+                              value: 0,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Icon(Icons.edit),
+                                  Text(
+                                    "Rename",
+                                  )
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: 1,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Icon(Icons.delete),
+                                  Text(
+                                    "Delete",
+                                  )
+                                ],
+                              ),
+                            )
+                          ]),
+                ],
+              ),
             ],
           ),
         );
