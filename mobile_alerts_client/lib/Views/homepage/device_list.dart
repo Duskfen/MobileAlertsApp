@@ -1,9 +1,8 @@
 import 'dart:async';
 
-import 'package:filesystem_picker/filesystem_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_alerts_client/Model/device/device_types.dart';
-import 'package:path_provider/path_provider.dart' as devicePath;
 import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -36,18 +35,8 @@ class DeviceList extends StatelessWidget {
                 children: [
                   ElevatedButton.icon(
                       onPressed: () async {
-                        String? path = await FilesystemPicker.open(
-                          title: 'Save to folder',
-                          context: context,
-                          rootDirectory: await devicePath
-                              .getApplicationDocumentsDirectory(),
-                          fsType: FilesystemType.folder,
-                          pickText: 'Save file to this folder',
-                          showGoUp: true,
-                          contextActions: [
-                            FilesystemPickerNewFolderContextAction(),
-                          ],
-                        );
+                        String? path =
+                            await FilePicker.platform.getDirectoryPath();
                         if (path == null) {
                           return;
                         }
@@ -60,15 +49,15 @@ class DeviceList extends StatelessWidget {
                   ),
                   ElevatedButton.icon(
                       onPressed: () async {
-                        String? path = await FilesystemPicker.open(
-                          title: 'Open file',
-                          context: context,
-                          rootDirectory: await devicePath
-                              .getApplicationDocumentsDirectory(),
-                          fsType: FilesystemType.file,
-                          allowedExtensions: ['.json'],
-                          fileTileSelectMode: FileTileSelectMode.wholeTile,
-                        );
+                        FilePickerResult? result = (await FilePicker.platform
+                            .pickFiles(
+                                allowMultiple: false,
+                                type: FileType.custom,
+                                allowedExtensions: ["json"]));
+                        if (result == null) {
+                          return;
+                        }
+                        String? path = result.files.single.path;
                         if (path == null) {
                           return;
                         }

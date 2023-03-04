@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_json_mapper/dart_json_mapper.dart';
@@ -81,7 +80,8 @@ class RegisteredDevices extends ChangeNotifier {
       device = DeviceRepository.save(device);
       devices.add(device);
       notifyListeners();
-      await (device.getNewMeasurement());
+      unawaited(device.getNewMeasurement().then((value) =>
+          notifyListeners())); //have to notify again (dont know why?)
     }
   }
 
@@ -90,7 +90,7 @@ class RegisteredDevices extends ChangeNotifier {
         element.error != null); //or there is a serialization error (?)
 
     await File(
-            '$path/mobileAlertsExport_${DateTime.now().toIso8601String()}.json')
+            '$path/mobileAlertsExport_${DateTime.now().millisecondsSinceEpoch}.json')
         .writeAsString(JsonMapper.serialize(this));
   }
 }

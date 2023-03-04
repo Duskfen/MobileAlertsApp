@@ -10,14 +10,13 @@ dependencies:
   contextmenu: ^3.0.0
   dart_json_mapper: ^2.2.9
   dynamic_color: ^1.6.2
-  filesystem_picker: ^3.1.0
+  file_picker: ^5.2.5
   flutter:
     sdk: flutter
   http: ^0.13.5
   intl: ^0.18.0
   isar: ^3.0.5
   isar_flutter_libs: ^3.0.5
-  path_provider: ^2.0.13
   prompt_dialog: ^1.0.10
   provider: ^6.0.5
   worker_manager: ^5.0.0

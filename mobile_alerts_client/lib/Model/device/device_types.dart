@@ -373,8 +373,8 @@ enum DeviceType {
   const DeviceType(this.identifier, this.measurementProperties);
 
   factory DeviceType.fromId(String id) {
-    return values
-        .firstWhere((element) => element.identifier == id.substring(0, 2));
+    return values.firstWhere(
+        (element) => element.identifier == id.toUpperCase().substring(0, 2));
   }
 }
 
