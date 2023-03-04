@@ -138,45 +138,14 @@ class Header extends StatelessWidget {
                       "${Globals.dateFormat(device.measurements.last.measureTime)}",
                       style: theme.textTheme.bodyLarge,
                     ),
-                  PopupMenuButton(
-                      onSelected: (selection) async {
-                        switch (selection) {
-                          case 0:
-                            await renameDevice(context, device);
-                            break;
-                          case 1:
-                            await removeDevice(device);
-                            break;
-                        }
-                      },
-                      itemBuilder: (BuildContext context) => [
-                            PopupMenuItem<int>(
-                              value: 0,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: const [
-                                  Icon(Icons.edit),
-                                  Text(
-                                    "Rename",
-                                  )
-                                ],
-                              ),
-                            ),
-                            PopupMenuItem(
-                              value: 1,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: const [
-                                  Icon(Icons.delete),
-                                  Text(
-                                    "Delete",
-                                  )
-                                ],
-                              ),
-                            )
-                          ]),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: BatteryIndicator(
+                      device: device,
+                      theme: theme,
+                    ),
+                  ),
+                  DevicePopupMenu(device: device, removeDevice: removeDevice),
                 ],
               ),
             ],
@@ -184,6 +153,87 @@ class Header extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+class BatteryIndicator extends StatelessWidget {
+  const BatteryIndicator(
+      {super.key, required this.device, required this.theme});
+
+  final ThemeData theme;
+  final Device device;
+
+  @override
+  Widget build(BuildContext context) {
+    switch (device.lowbattery) {
+      case true:
+        return Icon(
+          Icons.battery_1_bar,
+          color: theme.colorScheme.error,
+        );
+      case false:
+        return const Icon(Icons.battery_full);
+      case null:
+        return Icon(
+          Icons.battery_unknown,
+          color: theme.colorScheme.error,
+        );
+      default:
+    }
+    return const Icon(Icons.battery_alert);
+  }
+}
+
+class DevicePopupMenu extends StatelessWidget {
+  const DevicePopupMenu({
+    super.key,
+    required this.device,
+    required this.removeDevice,
+  });
+
+  final Device device;
+  final Function(Device device) removeDevice;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton(
+        // padding: EdgeInsets.all(0),
+        onSelected: (selection) async {
+          switch (selection) {
+            case 0:
+              await renameDevice(context, device);
+              break;
+            case 1:
+              await removeDevice(device);
+              break;
+          }
+        },
+        itemBuilder: (BuildContext context) => [
+              PopupMenuItem<int>(
+                value: 0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: const [
+                    Icon(Icons.edit),
+                    Text(
+                      "Rename",
+                    )
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 1,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: const [
+                    Icon(Icons.delete),
+                    Text(
+                      "Delete",
+                    )
+                  ],
+                ),
+              )
+            ]);
   }
 }
 

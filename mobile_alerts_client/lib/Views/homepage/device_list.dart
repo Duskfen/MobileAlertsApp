@@ -23,51 +23,51 @@ class DeviceList extends StatelessWidget {
         floatingActionButton:
             ElevatedSensorAddButton(devices: registeredDevices),
         body: ReorderableListView(
+          header: Padding(
+            key: const Key("Header_Key_Import_Export"),
+            padding: const EdgeInsets.all(4.0),
+            child: Row(
+              children: [
+                ElevatedButton.icon(
+                    onPressed: () async {
+                      String? path =
+                          await FilePicker.platform.getDirectoryPath();
+                      if (path == null) {
+                        return;
+                      }
+                      await registeredDevices.export(path);
+                    },
+                    icon: const Icon(Icons.arrow_upward),
+                    label: const Text("Export")),
+                const SizedBox(
+                  width: 15,
+                ),
+                ElevatedButton.icon(
+                    onPressed: () async {
+                      FilePickerResult? result = (await FilePicker.platform
+                          .pickFiles(
+                              allowMultiple: false,
+                              type: FileType.custom,
+                              allowedExtensions: ["json"]));
+                      if (result == null) {
+                        return;
+                      }
+                      String? path = result.files.single.path;
+                      if (path == null) {
+                        return;
+                      }
+                      await registeredDevices.import(path);
+                    },
+                    icon: const Icon(Icons.arrow_downward),
+                    label: const Text("Import")),
+              ],
+            ),
+          ),
           onReorder: (int oldIndex, int newIndex) {
             registeredDevices.reorder(oldIndex, newIndex);
           },
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 80),
           children: [
-            Padding(
-              key: const Key("Header_Key_Import_Export"),
-              padding: const EdgeInsets.all(4.0),
-              child: Row(
-                children: [
-                  ElevatedButton.icon(
-                      onPressed: () async {
-                        String? path =
-                            await FilePicker.platform.getDirectoryPath();
-                        if (path == null) {
-                          return;
-                        }
-                        await registeredDevices.export(path);
-                      },
-                      icon: const Icon(Icons.arrow_upward),
-                      label: const Text("Export")),
-                  const SizedBox(
-                    width: 15,
-                  ),
-                  ElevatedButton.icon(
-                      onPressed: () async {
-                        FilePickerResult? result = (await FilePicker.platform
-                            .pickFiles(
-                                allowMultiple: false,
-                                type: FileType.custom,
-                                allowedExtensions: ["json"]));
-                        if (result == null) {
-                          return;
-                        }
-                        String? path = result.files.single.path;
-                        if (path == null) {
-                          return;
-                        }
-                        await registeredDevices.import(path);
-                      },
-                      icon: const Icon(Icons.arrow_downward),
-                      label: const Text("Import")),
-                ],
-              ),
-            ),
             if (registeredDevices.devices.isEmpty)
               const Card(
                 key: Key("No_Device_Information_Banner"),
