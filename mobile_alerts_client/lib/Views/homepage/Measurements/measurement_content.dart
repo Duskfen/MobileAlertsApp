@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_alerts_client/Model/device/device.dart';
+import 'package:mobile_alerts_client/Model/device/device_types.dart';
 
 import '../../../Model/device/measurements/measurement.dart';
 
 class MeasurementContent extends StatelessWidget {
-  const MeasurementContent({super.key, required this.device});
+  const MeasurementContent(
+      {super.key, required this.deviceType, required this.measurement});
 
-  final Device device;
+  final DeviceType deviceType;
+  final Measurement measurement;
 
   @override
   Widget build(BuildContext context) {
-    Measurement measurement = device.measurements.last;
     return Column(
       children: [
-        for (int i = 0;
-            i < device.deviceType.measurementProperties.length;
-            i += 2)
+        for (int i = 0; i < deviceType.measurementProperties.length; i += 2)
           Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Row(
@@ -23,9 +22,11 @@ class MeasurementContent extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   for (int j = 0; j < 2; j++) //2 items in each row
-                    i + j < device.deviceType.measurementProperties.length
+                    i + j < deviceType.measurementProperties.length
                         ? ValueRow(
-                            device: device, i: i + j, measurement: measurement)
+                            deviceType: deviceType,
+                            i: i + j,
+                            measurement: measurement)
                         : const SizedBox.shrink()
                 ],
               ))
@@ -37,12 +38,12 @@ class MeasurementContent extends StatelessWidget {
 class ValueRow extends StatelessWidget {
   const ValueRow({
     super.key,
-    required this.device,
+    required this.deviceType,
     required this.i,
     required this.measurement,
   });
 
-  final Device device;
+  final DeviceType deviceType;
   final int i;
   final Measurement measurement;
 
@@ -51,7 +52,7 @@ class ValueRow extends StatelessWidget {
     var theme = Theme.of(context);
 
     return Tooltip(
-      message: device.deviceType.measurementProperties[i].description,
+      message: deviceType.measurementProperties[i].description,
       child: Container(
           // alignment: Alignment.center,
           constraints: const BoxConstraints(minWidth: 110),
@@ -64,17 +65,17 @@ class ValueRow extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Icon(
-                device.deviceType.measurementProperties[i].icon,
+                deviceType.measurementProperties[i].icon,
                 color: theme.colorScheme.onBackground,
               ),
               const SizedBox(
                 width: 5,
               ),
               Text(
-                  device.deviceType.measurementProperties[i].formatter(
+                  deviceType.measurementProperties[i].formatter(
                       measurement.getDataPoint(
-                              device.deviceType.measurementProperties[i].key) +
-                          device.deviceType.measurementProperties[i].unit),
+                              deviceType.measurementProperties[i].key) +
+                          deviceType.measurementProperties[i].unit),
                   style: theme.textTheme.bodyMedium
                       ?.copyWith(color: theme.colorScheme.onBackground)),
             ],

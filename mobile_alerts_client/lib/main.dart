@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_alerts_client/Views/homepage/homepage.dart';
 //import 'package:workmanager/workmanager.dart';
 
+import 'Views/homepage/default_app_bar.dart';
 import 'main.mapper.g.dart' show initializeJsonMapperAsync;
 
 void main() async {
@@ -57,7 +58,8 @@ class _MainAppState extends State<MainApp> {
                     ThemeData.dark(useMaterial3: true).colorScheme),
             themeMode: themeMode,
             home: Scaffold(
-              appBar: myAppBar(context, themeMode),
+              appBar: AppBars.defaultAppBar(
+                  context, themeMode, const Text("Overview")),
               body: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: Center(child: Homepage()),
@@ -67,20 +69,5 @@ class _MainAppState extends State<MainApp> {
         },
       );
     });
-  }
-
-  AppBar myAppBar(BuildContext context, ThemeMode themeMode) {
-    return AppBar(
-      title: const Text("Overview"),
-      shadowColor: Theme.of(context).colorScheme.shadow,
-      actions: [
-        IconButton(
-            onPressed: () => MainApp.themeNotifier.value =
-                themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light,
-            icon: Icon(themeMode == ThemeMode.light
-                ? Icons.dark_mode
-                : Icons.light_mode)),
-      ],
-    );
   }
 }

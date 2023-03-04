@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_alerts_client/Views/deviceDetails/device_details.dart';
 import 'package:mobile_alerts_client/Views/homepage/Measurements/measurement_error_content.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:provider/provider.dart';
@@ -8,33 +9,51 @@ import '../../globals.dart';
 import 'Measurements/measurement_content.dart';
 
 class DeviceCard extends StatelessWidget {
-  const DeviceCard({
-    super.key,
-    required this.removeDevice,
-  });
+  const DeviceCard(
+      {super.key, required this.removeDevice, required this.device});
   final Function(Device device) removeDevice;
+  final Device device;
 
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-    return Consumer<Device>(builder: (context, device, child) {
-      return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Header(
-                theme: theme,
-                device: device,
-                removeDevice: removeDevice,
+    return ChangeNotifierProvider.value(
+      value: device,
+      child: Consumer<Device>(builder: (context, device, child) {
+        return GestureDetector(
+          onTap: () {
+            if (Navigator.canPop(context)) {
+              //if it is in a sub-route (i.e. already opend, dont navigate again)
+              return;
+            }
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => DeviceDetails(
+                        device: device,
+                        removeDevice: removeDevice,
+                      )),
+            );
+          },
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Header(
+                    theme: theme,
+                    device: device,
+                    removeDevice: removeDevice,
+                  ),
+                  const Divider(),
+                  deviceStateAwareContent(theme, device)
+                ],
               ),
-              const Divider(),
-              deviceStateAwareContent(theme, device)
-            ],
+            ),
           ),
-        ),
-      );
-    });
+        );
+      }),
+    );
   }
 
   Widget deviceStateAwareContent(ThemeData theme, Device device) {
@@ -45,65 +64,15 @@ class DeviceCard extends StatelessWidget {
         if (device.measurements.isEmpty) {
           return const CircularProgressIndicator();
         }
-        return MeasurementContent(device: device);
+        return MeasurementContent(
+          deviceType: device.deviceType,
+          measurement: device.measurements.last,
+        );
       case DeviceState.error:
         return MeasurementErrorContent(device: device);
       default:
         throw UnimplementedError();
     }
-  }
-}
-
-class ContextMenuContent extends StatelessWidget {
-  const ContextMenuContent(
-      {super.key,
-      required this.offset,
-      required this.device,
-      required this.removeDevice,
-      required this.reoderDevice});
-
-  final Offset offset;
-  final Device device;
-  final Function(Device device) removeDevice;
-  final Function(Device device, int change) reoderDevice;
-
-  @override
-  Widget build(BuildContext context) {
-    return AdaptiveTextSelectionToolbar(
-      anchors: TextSelectionToolbarAnchors(primaryAnchor: offset),
-      children: [
-        const VerticalDivider(),
-        MaterialButton(
-          onPressed: () async {
-            ContextMenuController.removeAny();
-            await renameDevice(context, device);
-          },
-          child: const Icon(Icons.edit),
-        ),
-        const VerticalDivider(),
-        GestureDetector(
-          onTap: () {
-            ContextMenuController.removeAny();
-            reoderDevice(device, -1);
-          },
-          child: const SizedBox(
-            width: 40,
-            child: Expanded(child: Center(child: Icon(Icons.arrow_upward))),
-          ),
-        ),
-        GestureDetector(
-          onTap: () {
-            ContextMenuController.removeAny();
-            reoderDevice(device, 1);
-          },
-          child: const SizedBox(
-            width: 40,
-            child: Expanded(child: Center(child: Icon(Icons.arrow_downward))),
-          ),
-        ),
-        const VerticalDivider(),
-      ],
-    );
   }
 }
 
@@ -204,6 +173,9 @@ class DevicePopupMenu extends StatelessWidget {
               await renameDevice(context, device);
               break;
             case 1:
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              }
               await removeDevice(device);
               break;
           }

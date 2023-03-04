@@ -79,12 +79,15 @@ class DeviceList extends StatelessWidget {
                 ),
               ),
             for (int i = 0; i < registeredDevices.devices.length; i++)
-              ChangeNotifierProvider.value(
-                  key: Key("device_$i"),
-                  value: registeredDevices.devices[i],
-                  child: DeviceCard(
-                      removeDevice: (Device device) =>
-                          registeredDevices.remove(device))),
+              Hero(
+                key: Key("device_${registeredDevices.devices[i].id}"),
+                tag: "hero_device_${registeredDevices.devices[i].id}",
+                child: DeviceCard(
+                  removeDevice: (Device device) =>
+                      registeredDevices.remove(device),
+                  device: registeredDevices.devices[i],
+                ),
+              ),
           ],
         ),
       );

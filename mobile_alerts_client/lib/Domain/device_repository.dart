@@ -21,6 +21,7 @@ class DeviceRepository {
     updateMeasurements(device);
 
     return device;
+
     //updateDeviceMeasurements(device);
   }
 
@@ -38,7 +39,6 @@ class DeviceRepository {
 
   static void remove(Device device) {
     return isar.writeTxnSync(() {
-      //TODO test if the measurements get also deleted
       isar.devices.deleteSync(device.id);
     });
   }
