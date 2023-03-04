@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_alerts_client/Model/device/device_types.dart';
+import 'package:path_provider/path_provider.dart' as devicePath;
 import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -27,6 +29,56 @@ class DeviceList extends StatelessWidget {
           },
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 80),
           children: [
+            Padding(
+              key: const Key("Header_Key_Import_Export"),
+              padding: const EdgeInsets.all(4.0),
+              child: Row(
+                children: [
+                  ElevatedButton.icon(
+                      onPressed: () async {
+                        String? path = await FilesystemPicker.open(
+                          title: 'Save to folder',
+                          context: context,
+                          rootDirectory: await devicePath
+                              .getApplicationDocumentsDirectory(),
+                          fsType: FilesystemType.folder,
+                          pickText: 'Save file to this folder',
+                          showGoUp: true,
+                          contextActions: [
+                            FilesystemPickerNewFolderContextAction(),
+                          ],
+                        );
+                        if (path == null) {
+                          return;
+                        }
+                        await registeredDevices.export(path);
+                      },
+                      icon: const Icon(Icons.arrow_upward),
+                      label: const Text("Export")),
+                  const SizedBox(
+                    width: 15,
+                  ),
+                  ElevatedButton.icon(
+                      onPressed: () async {
+                        String? path = await FilesystemPicker.open(
+                          title: 'Open file',
+                          context: context,
+                          rootDirectory: await devicePath
+                              .getApplicationDocumentsDirectory(),
+                          fsType: FilesystemType.file,
+                          allowedExtensions: ['.json'],
+                          fileTileSelectMode: FileTileSelectMode.wholeTile,
+                        );
+                        if (path == null) {
+                          return;
+                        }
+                        await registeredDevices.import(path);
+                      },
+                      icon: const Icon(Icons.arrow_downward),
+                      label: const Text("Import")),
+                ],
+              ),
+            ),
             if (registeredDevices.devices.isEmpty)
               const Card(
                 key: Key("No_Device_Information_Banner"),

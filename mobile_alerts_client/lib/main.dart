@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:mobile_alerts_client/Views/homepage/homepage.dart';
 //import 'package:workmanager/workmanager.dart';
 
+import 'main.mapper.g.dart' show initializeJsonMapperAsync;
+
 void main() async {
   // if (DeviceRepository.getAll().isEmpty) {
   //   Device d = await Device.createFetchDevice("020C28392184");
   //   DeviceRepository.save(d);
   // }
-
+  await initializeJsonMapperAsync();
   runApp(const MainApp());
 
   //Workmanager doesn't run on background.
@@ -78,9 +80,6 @@ class _MainAppState extends State<MainApp> {
             icon: Icon(themeMode == ThemeMode.light
                 ? Icons.dark_mode
                 : Icons.light_mode)),
-        IconButton(
-            onPressed: () => throw UnimplementedError(),
-            icon: const Icon(Icons.more_vert))
       ],
     );
   }

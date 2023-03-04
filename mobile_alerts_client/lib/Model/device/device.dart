@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:isar/isar.dart';
@@ -19,6 +20,7 @@ enum DeviceState {
   error,
 }
 
+@JsonSerializable()
 @Collection()
 class Device extends ChangeNotifier {
   Id id = Isar.autoIncrement;
@@ -38,6 +40,7 @@ class Device extends ChangeNotifier {
 
   int? lastseen;
 
+  @JsonProperty(ignore: true)
   @ignore
   DeviceState state = DeviceState.ready;
 
@@ -49,6 +52,7 @@ class Device extends ChangeNotifier {
   @enumerated
   late DeviceType deviceType;
 
+  @JsonProperty(ignore: true)
   final IsarLinks<Measurement> measurements = IsarLinks();
 
   Device({required String deviceid, required this.order, this.name})

@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
+import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_alerts_client/Domain/device_repository.dart';
 import 'device.dart';
 
+@JsonSerializable()
 class RegisteredDevices extends ChangeNotifier {
   List<Device> devices = [];
 
@@ -39,7 +43,7 @@ class RegisteredDevices extends ChangeNotifier {
     DeviceRepository.save(newdevice);
     devices.add(newdevice);
     notifyListeners();
-    unawaited(newdevice.getNewMeasurement());
+    await (newdevice.getNewMeasurement());
   }
 
   Future<void> remove(Device device) async {
@@ -60,5 +64,33 @@ class RegisteredDevices extends ChangeNotifier {
       DeviceRepository.update(devices[i]);
     }
     notifyListeners();
+  }
+
+  Future<void> import(String path) async {
+    final List<Device>? read = JsonMapper.deserialize<RegisteredDevices>(
+            await File(path).readAsString())
+        ?.devices;
+    if (read == null) return;
+
+    for (var device in devices) {
+      DeviceRepository.remove(device);
+    }
+    devices.removeWhere((element) => true);
+
+    for (var device in read) {
+      device = DeviceRepository.save(device);
+      devices.add(device);
+      notifyListeners();
+      await (device.getNewMeasurement());
+    }
+  }
+
+  Future<void> export(String path) async {
+    devices.removeWhere((element) =>
+        element.error != null); //or there is a serialization error (?)
+
+    await File(
+            '$path/mobileAlertsExport_${DateTime.now().toIso8601String()}.json')
+        .writeAsString(JsonMapper.serialize(this));
   }
 }
