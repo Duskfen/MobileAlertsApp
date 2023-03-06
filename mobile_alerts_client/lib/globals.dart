@@ -13,4 +13,12 @@ class Globals {
     }
     return DateFormat("dd.MM.yyyy HH:mm").format(date);
   }
+
+  static String onlyDate(DateTime date) {
+    return DateFormat("dd.MM.yyyy").format(date);
+  }
+
+  static String onlyTime(DateTime date) {
+    return DateFormat("HH:mm").format(date);
+  }
 }

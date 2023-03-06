@@ -1,12 +1,15 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:mobile_alerts_client/Views/homepage/Measurements/measurement_content.dart';
 import 'package:mobile_alerts_client/Views/homepage/device_card.dart';
+import 'package:timeline_tile/timeline_tile.dart';
 
 import '../../Model/device/device.dart';
 import '../../globals.dart';
 import '../../main.dart';
 import '../homepage/default_app_bar.dart';
-import 'measurements_compact.dart';
+import 'measurement_compact.dart';
+import "package:collection/collection.dart";
 
 class DeviceDetails extends StatelessWidget {
   const DeviceDetails({
@@ -40,16 +43,16 @@ class DeviceDetails extends StatelessWidget {
                         device: device,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          "Measurments:",
-                          style: theme.textTheme.bodyLarge,
-                        ),
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.all(8.0),
+                    //   child: Align(
+                    //     alignment: Alignment.topLeft,
+                    //     child: Text(
+                    //       "Measurments:",
+                    //       style: theme.textTheme.bodyLarge,
+                    //     ),
+                    //   ),
+                    // ),
                     _MeasurementList(device: device)
                   ],
                 )),
@@ -67,40 +70,64 @@ class _MeasurementList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+
+    var dateGroupedMeasurments = groupBy(device.measurements.toList().reversed,
+        (p0) => Globals.onlyDate(p0.fetchTime));
+
     return Expanded(
-      child: Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: ListView(
           children: [
-            for (final measurement
-                in device.measurements.toList()
-                  ..sort((a, b) => b.measureTime.compareTo(a.measureTime)))
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 16,
-                    ),
-                    child: ConstrainedBox(
-                      constraints:
-                          const BoxConstraints(minWidth: double.infinity),
-                      child: Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        alignment: WrapAlignment.spaceBetween,
-                        children: [
-                          Text(
-                              "${Globals.dateFormat(measurement.measureTime) ?? "unknown"}:"),
-                          MeasurementCompact(
-                            deviceType: device.deviceType,
-                            measurement: measurement,
-                          ),
-                        ],
-                      ),
+            for (final group in dateGroupedMeasurments.entries
+                .sortedBy((element) => element.key)
+                .reversed)
+              TimelineTile(
+                indicatorStyle: IndicatorStyle(
+                  width: 15,
+                  color: theme.colorScheme.secondaryContainer,
+                  indicatorXY: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                ),
+                afterLineStyle: LineStyle(
+                  color: theme.colorScheme.secondaryContainer,
+                  thickness: 2,
+                ),
+                alignment: TimelineAlign.start,
+                endChild: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(group.key),
+                        for (final item in group.value)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Wrap(
+                                  alignment: WrapAlignment.spaceBetween,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Text(
+                                        '${Globals.onlyTime(item.fetchTime)}:'),
+                                    MeasurementCompact(
+                                        deviceType: device.deviceType,
+                                        measurement: item),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                      ],
                     ),
                   ),
-                  const Divider(),
-                ],
-              ),
+                ),
+              )
           ],
         ),
       ),
