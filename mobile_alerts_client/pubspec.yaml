@@ -19,6 +19,7 @@ dependencies:
   isar_flutter_libs: ^3.0.5
   prompt_dialog: ^1.0.10
   provider: ^6.0.5
+  timelines: ^0.1.0
   worker_manager: ^5.0.0
 
 dev_dependencies:

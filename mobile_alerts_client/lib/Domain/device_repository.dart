@@ -38,6 +38,10 @@ class DeviceRepository {
   }
 
   static void remove(Device device) {
+    List<Id> ids = device.measurements.map((e) => e.id).toList();
+    isar.writeTxnSync(() {
+      isar.measurements.deleteAllSync(ids);
+    });
     return isar.writeTxnSync(() {
       isar.devices.deleteSync(device.id);
     });
