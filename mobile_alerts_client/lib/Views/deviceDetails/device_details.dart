@@ -1,6 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:mobile_alerts_client/Domain/device_repository.dart';
+import 'package:mobile_alerts_client/Model/device/measurements/measurement.dart';
 import 'package:mobile_alerts_client/Views/homepage/device_card.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
@@ -72,8 +75,11 @@ class _MeasurementList extends StatelessWidget {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
 
-    var dateGroupedMeasurments = groupBy(device.measurements.toList().reversed,
-        (p0) => Globals.onlyDate(p0.fetchTime));
+    var dateGroupedMeasurments = groupBy(
+        device.measurements.toList().reversed,
+        (p0) => Globals.onlyDate(
+              p0.fetchTime,
+            ));
 
     return Expanded(
       child: Padding(
@@ -81,7 +87,8 @@ class _MeasurementList extends StatelessWidget {
         child: ListView(
           children: [
             for (final group in dateGroupedMeasurments.entries
-                .sortedBy((element) => element.key)
+                .sortedBy((element) =>
+                    DateFormat("dd.MM.yyyy").parseStrict(element.key))
                 .reversed)
               TimelineTile(
                 indicatorStyle: IndicatorStyle(
