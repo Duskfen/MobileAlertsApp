@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_alerts_client/Model/device/device_types.dart';
+import 'package:mobile_alerts_client/Model/device/device_type.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:provider/provider.dart';
 

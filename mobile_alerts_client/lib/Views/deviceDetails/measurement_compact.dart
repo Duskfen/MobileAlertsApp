@@ -1,6 +1,5 @@
-
 import 'package:flutter/material.dart';
-import 'package:mobile_alerts_client/Model/device/device_types.dart';
+import 'package:mobile_alerts_client/Model/device/device_type.dart';
 
 import '../../../Model/device/measurements/measurement.dart';
 

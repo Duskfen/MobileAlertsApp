@@ -94,25 +94,17 @@ class Header extends StatelessWidget {
       builder: (BuildContext context, BoxConstraints constraints) {
         return SizedBox(
           width: constraints.maxWidth,
-          child: Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            alignment: WrapAlignment.spaceBetween,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              HeadLeft(device: device, theme: theme),
+              Expanded(child: HeadLeft(device: device, theme: theme)),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (device.measurements.isNotEmpty)
-                    Text(
-                      "${Globals.dateFormat(device.measurements.last.measureTime)}",
-                      style: theme.textTheme.bodyLarge,
-                    ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
-                    child: BatteryIndicator(
-                      device: device,
-                      theme: theme,
-                    ),
+                  BatteryIndicator(
+                    device: device,
+                    theme: theme,
                   ),
                   DevicePopupMenu(device: device, removeDevice: removeDevice),
                 ],
@@ -141,13 +133,15 @@ class BatteryIndicator extends StatelessWidget {
           color: theme.colorScheme.error,
         );
       case false:
-        return const Icon(Icons.battery_full);
+        return const SizedBox.shrink(); //
+      //return const Icon(Icons.battery_full);
       case null:
         return Icon(
           Icons.battery_unknown,
           color: theme.colorScheme.error,
         );
       default:
+        break;
     }
     return const Icon(Icons.battery_alert);
   }
@@ -221,45 +215,25 @@ class HeadLeft extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      //mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: WrapCrossAlignment.center,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ((device.name == null || device.name?.isEmpty == true)
-            ? Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    device.deviceid,
-                    style: theme.textTheme.bodyLarge,
-                  ),
-                  GestureDetector(
-                    onTap: () async {
-                      await renameDevice(context, device);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Icon(Icons.edit,
-                          size: 16, color: theme.colorScheme.secondary),
-                    ),
-                  ),
-                ],
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    overflow: TextOverflow.ellipsis,
-                    device.name!,
-                    style: theme.textTheme.bodyLarge,
-                  ),
-                  Text(
-                    device.deviceid,
-                    style: theme.textTheme.labelMedium
-                        ?.copyWith(color: theme.disabledColor),
-                  )
-                ],
-              )),
+        Text(
+          overflow: TextOverflow.ellipsis,
+          device.name ?? device.deviceid,
+          style: theme.textTheme.bodyLarge,
+        ),
+        if (device.measurements.isNotEmpty)
+          Text("${Globals.dateFormat(device.measurements.last.measureTime)}",
+              style: theme.textTheme.labelMedium
+              // ?.copyWith(color: theme.disabledColor),
+              ),
+        if (device.name != null)
+          (Text(
+            device.deviceid,
+            style: theme.textTheme.labelMedium
+                ?.copyWith(color: theme.disabledColor),
+          )),
       ],
     );
   }

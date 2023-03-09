@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:isar/isar.dart';
 import 'package:mobile_alerts_client/Domain/device_repository.dart';
-import 'package:mobile_alerts_client/Model/device/device_types.dart';
+import 'package:mobile_alerts_client/Model/device/device_type.dart';
 
 import 'measurements/fetch_error.dart';
 import 'measurements/measurement.dart';
