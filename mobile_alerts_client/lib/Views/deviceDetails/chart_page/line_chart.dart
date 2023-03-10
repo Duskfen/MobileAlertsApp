@@ -58,9 +58,7 @@ class LineChart extends StatelessWidget {
         .toInt()); //max
     var frequency =
         (to.millisecondsSinceEpoch - from.millisecondsSinceEpoch) / 2;
-    var yFrequency = (dataPoints
-                .map((e) => e.value)
-                .max - //TODO edgecase what if they are the same?
+    var yFrequency = (dataPoints.map((e) => e.value).max -
             dataPoints.map((e) => e.value).min) /
         9;
     if (yFrequency == 0) {
