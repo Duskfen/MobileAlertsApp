@@ -518,17 +518,17 @@ class MeasurementProperty {
   }
 
   static String windDirectionFormatter(String value) {
-    int? converted = int.tryParse(value);
+    num? converted = num.tryParse(value);
     if (converted == null) return value;
 
-    return WindDirections.fromCode(converted).representation;
+    return WindDirections.fromCode(converted.toInt()).representation;
   }
 
   static String openClosedFormatter(String value) {
-    if (value == "true") {
+    if (value == "true" || num.tryParse(value) == 1) {
       return "opened";
     }
-    if (value == "false") {
+    if (value == "false" || num.tryParse(value) == 0) {
       return "closed";
     }
     return value;

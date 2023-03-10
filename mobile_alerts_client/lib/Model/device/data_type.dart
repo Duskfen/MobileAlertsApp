@@ -5,8 +5,8 @@
 /// further reading: https://www.turing.com/kb/statistical-data-types#nominal-data
 ///
 /// Samples for graph usage:
-///  - [continuous] : histogram, box blot
-///  - [discrete] : bar graphs, stem plots
+///  - [continuous] : histogram, box blot, line chart
+///  - [discrete] : bar graphs, stem plots, line chart
 ///  - [nominal] : pie chart, bar chart
 ///  - [ordinal] : pie chart, bar chart
 enum DataType {
