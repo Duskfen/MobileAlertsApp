@@ -22,7 +22,7 @@ class MeasurementList extends StatelessWidget {
     var dateGroupedMeasurments = groupBy(
         device.measurements.toList().reversed,
         (p0) => Globals.onlyDate(
-              p0.fetchTime,
+              p0.measureTime,
             ));
 
     return Padding(
@@ -63,7 +63,8 @@ class MeasurementList extends StatelessWidget {
                                 alignment: WrapAlignment.spaceBetween,
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
-                                  Text('${Globals.onlyTime(item.fetchTime)}:'),
+                                  Text(
+                                      '${Globals.onlyTime(item.measureTime)}:'),
                                   MeasurementCompact(
                                       deviceType: device.deviceType,
                                       measurement: item),

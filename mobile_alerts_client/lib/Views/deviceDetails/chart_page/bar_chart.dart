@@ -31,7 +31,7 @@ class BarChart extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Chart(
-            padding: EdgeInsets.all(4),
+            padding: const EdgeInsets.all(4),
             duration: const Duration(milliseconds: 500),
             layers: [
               ChartAxisLayer(
