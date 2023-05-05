@@ -21,8 +21,6 @@ class DeviceRepository {
     updateMeasurements(device);
 
     return device;
-
-    //updateDeviceMeasurements(device);
   }
 
   static void update(Device device) {
@@ -34,6 +32,17 @@ class DeviceRepository {
       device.measurements
           .saveSync(); //Somehow thy async version does not work properly!
       device.measurements.loadSync();
+
+      List<Id> ids = device.measurements
+          .where((element) =>
+              element.fetchTime.millisecondsSinceEpoch <
+              DateTime.now()
+                  .subtract(const Duration(minutes: 1))
+                  .millisecondsSinceEpoch)
+          .map((e) => e.id)
+          .toList();
+
+      isar.measurements.deleteAllSync(ids);
     });
   }
 
