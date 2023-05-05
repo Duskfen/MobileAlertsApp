@@ -37,7 +37,7 @@ class DeviceRepository {
           .where((element) =>
               element.fetchTime.millisecondsSinceEpoch <
               DateTime.now()
-                  .subtract(const Duration(minutes: 1))
+                  .subtract(const Duration(days: 365))
                   .millisecondsSinceEpoch)
           .map((e) => e.id)
           .toList();
